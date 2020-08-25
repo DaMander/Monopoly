@@ -1,0 +1,456 @@
+{
+    "0": {
+        "name": "GO"
+    },
+    "1": {
+        "name": "OLD KENT ROAD",
+        "purchase": 60,
+        "rent": {
+            "0": 2,
+            "1": 10,
+            "2": 30,
+            "3": 90,
+            "4": 160,
+            "5": 250
+        },
+        "mortgage": 30,
+        "houses price": 50,
+        "colour": [179,116,6]
+    },
+    "2": {
+        "name": "COMMUNITY CHEST"
+    },
+    "3": {
+        "name": "WHITECHAPEL ROAD",
+        "purchase": 60,
+        "rent": {
+            "0": 4,
+            "1": 20,
+            "2": 60,
+            "3": 180,
+            "4": 320,
+            "5": 450
+        },
+        "mortgage": 30,
+        "houses price": 50,
+        "colour": [179,116,6]
+    },
+    "4": {
+        "name": "Income tax",
+        "purchase": null,
+        "rent": 200
+    },
+    "5": {
+        "name": "KINGS CROSS STATION",
+        "purchase": 200,
+        "rent": {
+            "0": 25,
+            "1": 50,
+            "2": 100,
+            "3": 200
+        },
+        "mortgage": 100,
+        "houses price": null,
+        "colour": [0,0,0]
+    },
+    "6": {
+        "name": "THE ANGEL ISLINGTON",
+        "purchase": 100,
+        "rent": {
+            "0": 6,
+            "1": 30,
+            "2": 90,
+            "3": 270,
+            "4": 400,
+            "5": 550
+        },
+        "mortgage": 30,
+        "houses price": 50,
+        "colour": [137,224,255]
+
+    },
+    "7": {
+        "name": "CHANCE"
+    },
+    "8": {
+        "name": "EUSTON ROAD",
+        "purchase": 100,
+        "rent": {
+            "0": 6,
+            "1": 30,
+            "2": 90,
+            "3": 270,
+            "4": 400,
+            "5": 550
+        },
+        "mortgage": 50,
+        "houses price": 50,
+        "colour": [137,224,255]
+    },
+    "9": {
+        "name": "PENTONVILLE ROAD",
+        "purchase": 120,
+        "rent": {
+            "0": 8,
+            "1": 40,
+            "2": 100,
+            "3": 300,
+            "4": 450,
+            "5": 600
+        },
+        "mortgage": 70,
+        "houses price": 50,
+        "colour": [137,224,255]
+    },
+    "10": {
+        "name": "JAIL"
+    },
+    "11": {
+        "name": "PALL MALL",
+        "purchase": 140,
+        "rent": {
+            "0": 10,
+            "1": 50,
+            "2": 150,
+            "3": 450,
+            "4": 625,
+            "5": 750
+        },
+        "mortgage": 70,
+        "houses price": 100,
+        "colour": [255,0,137]
+    },
+    "12": {
+        "name": "ELECTRIC COMPANY",
+        "purchase": 150,
+        "rent": {
+            "0": 4,
+            "1": 10
+        },
+        "mortgage": 75
+    },
+    "13": {
+        "name": "WHITEHALL",
+        "purchase": 140,
+        "rent": {
+            "0": 10,
+            "1": 50,
+            "2": 150,
+            "3": 450,
+            "4": 625,
+            "5": 750
+        },
+        "mortgage": 70,
+        "houses price": 100,
+        "colour": [255,0,137]
+    },
+    "14": {
+        "name": "NORTHUMBERLAND AVENUE",
+        "purchase": 160,
+        "rent": {
+            "0": 10,
+            "1": 50,
+            "2": 150,
+            "3": 450,
+            "4": 625,
+            "5": 750
+        },
+        "mortgage": 70,
+        "houses price": 100,
+        "colour": [255,0,137]
+    },
+    "15": {
+        "name": "MARYLEBONE STATION",
+        "purchase": 200,
+        "rent": {
+            "0": 25,
+            "1": 50,
+            "2": 100,
+            "3": 200
+        },
+        "mortgage": 100,
+        "houses price": null,
+        "colour": [0,0,0]
+    },
+    "16": {
+        "name": "BOW STREET",
+        "purchase": 180,
+        "rent": {
+            "0": 14,
+            "1": 70,
+            "2": 200,
+            "3": 550,
+            "4": 750,
+            "5": 950
+        },
+        "mortgage": 90,
+        "houses price": 100,
+        "colour": [255,145,0]
+    },
+    "17": {
+        "name": "COMMUNITY CHEST"
+    },
+    "18": {
+        "name": "MARLBOROUGH STREET",
+        "purchase": 180,
+        "rent": {
+            "0": 14,
+            "1": 70,
+            "2": 200,
+            "3": 550,
+            "4": 750,
+            "5": 950
+        },
+        "mortgage": 90,
+        "houses price": 100,
+        "colour": [255,145,0]
+    },
+    "19": {
+        "name": "VINE STREET",
+        "purchase": 200,
+        "rent": {
+            "0": 16,
+            "1": 80,
+            "2": 220,
+            "3": 600,
+            "4": 800,
+            "5": 1000
+        },
+        "mortgage": 100,
+        "houses price": 100,
+        "colour": [255,145,0]
+    },
+    "20": {
+        "name": "FREE PARKING"
+    },
+    "21": {
+        "name": "THE STRAND",
+        "purchase": 220,
+        "rent": {
+            "0": 18,
+            "1": 90,
+            "2": 250,
+            "3": 700,
+            "4": 875,
+            "5": 1050
+        },
+        "mortgage": 110,
+        "houses price": 150,
+        "colour": [255,0,0]
+    },
+    "22": {
+        "name": "CHANCE"
+    },
+    "23": {
+        "name": "FLEET STREET",
+        "purchase": 220,
+        "rent": {
+            "0": 18,
+            "1": 90,
+            "2": 250,
+            "3": 700,
+            "4": 875,
+            "5": 1050
+        },
+        "mortgage": 110,
+        "houses price": 150,
+        "colour": [255,0,0]
+    },
+    "24": {
+        "name": "TRAFALGAR SQUARE",
+        "purchase": 240,
+        "rent": {
+            "0": 20,
+            "1": 100,
+            "2": 300,
+            "3": 750,
+            "4": 925,
+            "5": 1100
+        },
+        "mortgage": 120,
+        "houses price": 150,
+        "colour": [255,0,0]
+    },
+    "25": {
+        "name": "FENCHURCH ST STREET",
+        "purchase": 200,
+        "rent": {
+            "0": 25,
+            "1": 50,
+            "2": 100,
+            "3": 200
+        },
+        "mortgage": 100,
+        "houses price": null,
+        "colour": [0,0,0]
+
+    },
+    "26": {
+        "name": "LEICESTER SQUARE",
+        "purchase": 260,
+        "rent": {
+            "0": 22,
+            "1": 110,
+            "2": 330,
+            "3": 800,
+            "4": 975,
+            "5": 1150
+        },
+        "mortgage": 130,
+        "houses price": 150,
+        "colour": [255,239,0]
+    },
+    "27": {
+        "name": "COVENTRY STREET",
+        "purchase": 260,
+        "rent": {
+            "0": 22,
+            "1": 110,
+            "2": 330,
+            "3": 800,
+            "4": 975,
+            "5": 1150
+        },
+        "mortgage": 130,
+        "houses price": 150,
+        "colour": [255,239,0]
+    },
+    "28": {
+        "name": "WATER WORKS",
+        "purchase": 150,
+        "rent": {
+            "0": null,
+            "1": null,
+            "2": null,
+            "3": null,
+            "4": null,
+            "5": null
+        },
+        "mortgage": 75
+
+
+
+
+
+
+
+
+    },
+    "29": {
+        "name": "PICCADILLY",
+        "purchase": 280,
+        "rent": {
+            "0": 22,
+            "1": 120,
+            "2": 360,
+            "3": 850,
+            "4": 1025,
+            "5": 1200
+        },
+        "mortgage": 140,
+        "houses price": 150,
+        "colour": [255,239,0]
+    },
+    "30": {
+        "name": "GO TO JAIL"
+    },
+    "31": {
+        "name": "REGENT STREET",
+        "purchase": 300,
+        "rent": {
+            "0": 26,
+            "1": 130,
+            "2": 390,
+            "3": 900,
+            "4": 1100,
+            "5": 1275
+        },
+        "mortgage": 150,
+        "houses price": 200,
+        "colour": [0,255,0]
+    },
+    "32": {
+        "name": "OXFORD STREET",
+        "purchase": 300,
+        "rent": {
+            "0": 26,
+            "1": 130,
+            "2": 390,
+            "3": 900,
+            "4": 1100,
+            "5": 1275
+        },
+        "mortgage": 150,
+        "houses price": 200,
+        "colour": [0,255,0]
+    },
+    "33": {
+        "name": "COMMUNITY CHEST"
+    },
+    "34": {
+        "name": "BOND STREET",
+        "purchase": 320,
+        "rent": {
+            "0": 28,
+            "1": 150,
+            "2": 450,
+            "3": 1000,
+            "4": 1200,
+            "5": 1400
+        },
+        "mortgage": 160,
+        "houses price": 200,
+        "colour": [0,255,0]
+    },
+    "35": {
+        "name": "LIVERPOOL STREET STATION",
+        "purchase": 200,
+        "rent": {
+            "0": 25,
+            "1": 50,
+            "2": 100,
+            "3": 200
+        },
+        "mortgage": 100,
+        "houses price": null,
+        "colour": [0,0,0]
+    },
+    "36": {
+        "name": "CHANCE"
+    },
+    "37": {
+        "name": "PARK LANE",
+        "purchase": 350,
+        "rent": {
+            "0": 35,
+            "1": 175,
+            "2": 500,
+            "3": 1100,
+            "4": 1300,
+            "5": 1500
+        },
+        "mortgage": 175,
+        "houses price": 200,
+        "colour": [0,0,255]
+    },
+    "38": {
+        "name": "SUPER TAX",
+        "purchase": null,
+        "rent": 100
+    },
+    "39": {
+        "name": "MAYFAIR",
+        "purchase": 400,
+        "rent": {
+            "0": 50,
+            "1": 200,
+            "2": 600,
+            "3": 1400,
+            "4": 1700,
+            "5": 2000
+        },
+        "mortgage": 200,
+        "houses price": 200,
+        "colour": [0,0,255]
+    }
+}
