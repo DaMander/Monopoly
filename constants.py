@@ -1,15 +1,19 @@
 import pygame
 # Colours
-BROWN = (179,116,6)
-LIGHT_BLUE = (137,224,255)
-PINK = (255,0,137)
-ORANGE = (255,145,0)
-BLACK = (0, 0, 0)
-RED = (255, 0, 0)
-YELLOW = (255,239,0)
-GREEN = (0, 255, 0)
-DARK_BLUE = (0, 0, 255)
-WHITE = (255,255,255)
+COLOURS = {
+    "BROWN" : (179,116,6),
+    "LIGHT BLUE" : (137,224,255),
+    "PINK" : (255,0,137),
+    "ORANGE" : (255,145,0),
+    "BLACK" : (0, 0, 0),
+    "RED" : (255, 0, 0),
+    "YELLOW" : (255,239,0),
+    "GREEN" : (0, 255, 0),
+    "DARK BLUE" : (0, 0, 255),
+    "WHITE" : (255,255,255),
+    "BOARD COLOUR": (200, 200, 255)
+}
+
 
 # Dimensions
 WINDOW_WIDTH = 1280

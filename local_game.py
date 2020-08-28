@@ -12,7 +12,7 @@ win = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 clock = pygame.time.Clock()
 
 
-pl_list = [Player(0, 14, RED, "Player 1"),Player(0, 14, DARK_BLUE, "Player 2")] #Player(0, 14, PINK, "Player 3")
+pl_list = [Player(0, 14, COLOURS["RED"], "Player 1"),Player(0, 14, COLOURS["DARK BLUE"], "Player 2")] #Player(0, 14, PINK, "Player 3")
 
 board = Board(WINDOW_WIDTH, WINDOW_HEIGHT)#the Board is a class within board.py
 #using the board class it then sets up all the properties needing to be made
@@ -33,10 +33,8 @@ action_time = 0
 #this will be used for timers or delays
 
 board.sort_sets()
-for p in pl_list:
-    p.sort_sets(board)
 
-
+print(board.sorted_sets)
 
 while run:
     #to quit the file
@@ -44,7 +42,7 @@ while run:
         if event.type == pygame.QUIT:
             run = False
 
-        print(pl_list[turn].owned_propertys)
+
         win.fill((200, 200, 255))
         board.draw(pl_list, pl_list[turn].pos, action_taken)
         # board.draw is in the board class and goes through all the propertys, player squares and buttons that need to be drawn

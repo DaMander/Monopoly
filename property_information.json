@@ -15,7 +15,7 @@
         },
         "mortgage": 30,
         "houses price": 50,
-        "colour": [179,116,6]
+        "colour": "BROWN"
     },
     "2": {
         "name": "COMMUNITY CHEST"
@@ -33,7 +33,7 @@
         },
         "mortgage": 30,
         "houses price": 50,
-        "colour": [179,116,6]
+        "colour": "BROWN"
     },
     "4": {
         "name": "Income tax",
@@ -51,7 +51,7 @@
         },
         "mortgage": 100,
         "houses price": null,
-        "colour": [0,0,0]
+        "colour": "BLACK"
     },
     "6": {
         "name": "THE ANGEL ISLINGTON",
@@ -66,7 +66,7 @@
         },
         "mortgage": 30,
         "houses price": 50,
-        "colour": [137,224,255]
+        "colour": "LIGHT BLUE"
 
     },
     "7": {
@@ -85,7 +85,7 @@
         },
         "mortgage": 50,
         "houses price": 50,
-        "colour": [137,224,255]
+        "colour": "LIGHT BLUE"
     },
     "9": {
         "name": "PENTONVILLE ROAD",
@@ -100,7 +100,7 @@
         },
         "mortgage": 70,
         "houses price": 50,
-        "colour": [137,224,255]
+        "colour": "LIGHT BLUE"
     },
     "10": {
         "name": "JAIL"
@@ -118,7 +118,7 @@
         },
         "mortgage": 70,
         "houses price": 100,
-        "colour": [255,0,137]
+        "colour": "PINK"
     },
     "12": {
         "name": "ELECTRIC COMPANY",
@@ -142,7 +142,7 @@
         },
         "mortgage": 70,
         "houses price": 100,
-        "colour": [255,0,137]
+        "colour": "PINK"
     },
     "14": {
         "name": "NORTHUMBERLAND AVENUE",
@@ -157,7 +157,7 @@
         },
         "mortgage": 70,
         "houses price": 100,
-        "colour": [255,0,137]
+        "colour": "PINK"
     },
     "15": {
         "name": "MARYLEBONE STATION",
@@ -170,7 +170,7 @@
         },
         "mortgage": 100,
         "houses price": null,
-        "colour": [0,0,0]
+        "colour": "BLACK"
     },
     "16": {
         "name": "BOW STREET",
@@ -185,7 +185,7 @@
         },
         "mortgage": 90,
         "houses price": 100,
-        "colour": [255,145,0]
+        "colour": "ORANGE"
     },
     "17": {
         "name": "COMMUNITY CHEST"
@@ -203,7 +203,7 @@
         },
         "mortgage": 90,
         "houses price": 100,
-        "colour": [255,145,0]
+        "colour": "ORANGE"
     },
     "19": {
         "name": "VINE STREET",
@@ -218,7 +218,7 @@
         },
         "mortgage": 100,
         "houses price": 100,
-        "colour": [255,145,0]
+        "colour": "ORANGE"
     },
     "20": {
         "name": "FREE PARKING"
@@ -236,7 +236,7 @@
         },
         "mortgage": 110,
         "houses price": 150,
-        "colour": [255,0,0]
+        "colour": "RED"
     },
     "22": {
         "name": "CHANCE"
@@ -254,7 +254,7 @@
         },
         "mortgage": 110,
         "houses price": 150,
-        "colour": [255,0,0]
+        "colour": "RED"
     },
     "24": {
         "name": "TRAFALGAR SQUARE",
@@ -269,7 +269,7 @@
         },
         "mortgage": 120,
         "houses price": 150,
-        "colour": [255,0,0]
+        "colour": "RED"
     },
     "25": {
         "name": "FENCHURCH ST STREET",
@@ -282,7 +282,7 @@
         },
         "mortgage": 100,
         "houses price": null,
-        "colour": [0,0,0]
+        "colour": "BLACK"
 
     },
     "26": {
@@ -298,7 +298,7 @@
         },
         "mortgage": 130,
         "houses price": 150,
-        "colour": [255,239,0]
+        "colour": "YELLOW"
     },
     "27": {
         "name": "COVENTRY STREET",
@@ -313,7 +313,7 @@
         },
         "mortgage": 130,
         "houses price": 150,
-        "colour": [255,239,0]
+        "colour": "YELLOW"
     },
     "28": {
         "name": "WATER WORKS",
@@ -327,14 +327,6 @@
             "5": null
         },
         "mortgage": 75
-
-
-
-
-
-
-
-
     },
     "29": {
         "name": "PICCADILLY",
@@ -349,7 +341,7 @@
         },
         "mortgage": 140,
         "houses price": 150,
-        "colour": [255,239,0]
+        "colour": "YELLOW"
     },
     "30": {
         "name": "GO TO JAIL"
@@ -367,7 +359,7 @@
         },
         "mortgage": 150,
         "houses price": 200,
-        "colour": [0,255,0]
+        "colour": "GREEN"
     },
     "32": {
         "name": "OXFORD STREET",
@@ -382,7 +374,7 @@
         },
         "mortgage": 150,
         "houses price": 200,
-        "colour": [0,255,0]
+        "colour": "GREEN"
     },
     "33": {
         "name": "COMMUNITY CHEST"
@@ -400,7 +392,7 @@
         },
         "mortgage": 160,
         "houses price": 200,
-        "colour": [0,255,0]
+        "colour": "GREEN"
     },
     "35": {
         "name": "LIVERPOOL STREET STATION",
@@ -413,7 +405,7 @@
         },
         "mortgage": 100,
         "houses price": null,
-        "colour": [0,0,0]
+        "colour": "BLACK"
     },
     "36": {
         "name": "CHANCE"
@@ -431,7 +423,7 @@
         },
         "mortgage": 175,
         "houses price": 200,
-        "colour": [0,0,255]
+        "colour": "DARK BLUE"
     },
     "38": {
         "name": "SUPER TAX",
@@ -451,6 +443,6 @@
         },
         "mortgage": 200,
         "houses price": 200,
-        "colour": [0,0,255]
+        "colour": "DARK BLUE"
     }
 }

@@ -16,9 +16,7 @@ class Player:
         self.owned_propertys = []
         #add list which uses the thing to add propertys to create the list with every set
 
-    def sort_sets(self, win):
-        self.owned_propertys = win.sorted_sets
-        self.owned_propertys = [[None for j in i] for i in self.owned_propertys]
+
 
     def draw(self, win):
         space = win.properties[self.pos]
@@ -27,9 +25,9 @@ class Player:
 
     def draw_player_square(self,win, x, variable, width, height):
         squ = (x, variable*height , width, height)
-        pygame.draw.rect(win, BLACK, (squ),1)
-        render_text(win, font, self.username, BLACK, (pygame.Rect(squ).centerx, pygame.Rect(squ).centery -height/4))
-        render_text(win, font, str(self.money), BLACK, (pygame.Rect(squ).center))
+        pygame.draw.rect(win, COLOURS["BLACK"], (squ),1)
+        render_text(win, font, self.username, COLOURS["BLACK"], (pygame.Rect(squ).centerx, pygame.Rect(squ).centery -height/4))
+        render_text(win, font, str(self.money), COLOURS["BLACK"], (pygame.Rect(squ).center))
 
     def property_action(self, win):
         action = win.properties[self.pos].property_actions()
@@ -46,18 +44,20 @@ class Player:
         if self.pos - roll_no < 0:
             self.money += 200
 
-    def add_property(self, property):
+    def add_property(self, property, board):
         added = False
-        for l in self.owned_propertys:
-            for p in l:
+        for set in self.owned_propertys:
+            for p in set:
                 if p.colour == property.colour:
-                    l.append(property)
+                    set.append(property)
                     added = True
+                    self.check_for_full_set(board, len(set))
                     break#this will check through the propertys owned and if the colour is the same then it will append it into the list otherwise it'll just add it
         if added == False:
             self.owned_propertys.append([property])
 
-
+    def check_for_full_set(self, win, set_length):
+        if len(win.sorted_sets[list(COLOURS.keys())[list(COLOURS.values()).index(win.properties[self.pos].colour)]]) == 
 
 
 
