@@ -12,12 +12,13 @@ win = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 clock = pygame.time.Clock()
 
 
-pl_list = [Player(0, 14, COLOURS["RED"], "Player 1"),Player(0, 14, COLOURS["DARK BLUE"], "Player 2")] #Player(0, 14, PINK, "Player 3")
+pl_list = [Player(0, 14, COLOURS["RED"], "Player 1")]#,Player(0, 14, COLOURS["DARK BLUE"], "Player 2")] #Player(0, 14, PINK, "Player 3")
 
 board = Board(WINDOW_WIDTH, WINDOW_HEIGHT)#the Board is a class within board.py
 #using the board class it then sets up all the properties needing to be made
 
-auction_list = []
+auction_list = [] # this will be used to control who is allowed to bid during an auction
+auction_turn = 0 #this will be used when the player selects auction so it can go through each player in the list
 jail_list = []
 run = True
 turn = 0
@@ -34,13 +35,13 @@ action_time = 0
 
 board.sort_sets()
 
-print(board.sorted_sets)
 
 while run:
     #to quit the file
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
+
 
 
         win.fill((200, 200, 255))
@@ -59,7 +60,7 @@ while run:
 
                 if x == "ROLL DICE":
                     x = dice_roll()
-                    pl_list[turn].move(x[0])
+                    pl_list[turn].move(x[0]) #when the player clicks roll dice it gets the number and then using the property_action function determines what property has been landed on
                     if x[1] == True:
                         triple_checker+=1
                     action_taken = pl_list[turn].property_action(board)
@@ -68,31 +69,46 @@ while run:
 
                 elif x == "END TURN":
                     turn += 1
-                    action_taken = 0
+                    action_taken = 0 #this will reset it and then let the next player have their turn
 
                 elif x == "MAKE DEAL":
-                    pass
+                    print("gvg")
 
                 elif x == "LOOK AT PROPERTYS":
-                    pass
+                    action_taken = 4
 
                 elif x == "PURCHASE":
                     pl_list[turn].buy_property(board)
                     action_taken = 1
 
                 elif x == "AUCTION":
+                    auction_list = pl_list
+                    action_taken = 5
+
+                elif x == "BID 100":
+                    pass
+                elif x == "BID 10":
+                    pass
+                elif x == "BID 1":
                     pass
 
-        if action_taken == 6:
+
+
+
+
+
+        if action_taken == 6 or action_taken == 7:
             action_time = time.time() if action_time == 0 else action_time
             if time.time() - action_time >= 3:
-                pl_list[turn].pay_rent(board)
+                if action_taken == 6:
+                    pl_list[turn].pay_rent(board)
+                elif action_taken == 7:
+                    pl_list[turn].pay_tax(board)
                 action_taken = 1
                 action_time = 0
 
         #if list(BROWN) == board.properties[pl_list[turn].pos].colour:
          #   print("skrrr skrrr")
-
 
 
 

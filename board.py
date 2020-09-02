@@ -2,6 +2,7 @@ import pygame
 import json
 from constants import *
 from player import Player
+import textwrap
 pygame.init()
 
 
@@ -45,8 +46,9 @@ class Board(pygame.Surface):   #this class creates the 40 instances of the locat
         self.buttons = [[Button("ROLL DICE", BOARD_WIDTH/2, WINDOW_HEIGHT/2, COLOURS["GREEN"], True)],
                         [Button("END TURN", BOARD_WIDTH/2, WINDOW_HEIGHT/2, COLOURS["RED"], True), Button("MAKE DEAL", BOARD_WIDTH/2, 150 + WINDOW_HEIGHT/2, COLOURS["PINK"], True), Button("LOOK AT PROPERTYS", BOARD_WIDTH/2,  WINDOW_HEIGHT/2 -150, COLOURS["YELLOW"], True)],
                         [Button("PURCHASE", PROPERTY_HEIGHT + PROPERTY_WIDTH + 120, 9 * PROPERTY_WIDTH +10, COLOURS["GREEN"], True), Button("AUCTION", PROPERTY_HEIGHT + PROPERTY_WIDTH + 270, 9 * PROPERTY_WIDTH +10, COLOURS["DARK BLUE"], True)],
-                        [],
-                        [],
+                        [],#making a deal
+                        [Button("+ HOUSE", PROPERTY_HEIGHT + PROPERTY_WIDTH +10, PROPERTY_HEIGHT + 7*PROPERTY_WIDTH, COLOURS["GREEN"], False, PROPERTY_ENLARGE_WIDTH/2, 50), Button("- HOUSE", PROPERTY_HEIGHT + PROPERTY_WIDTH +10, PROPERTY_HEIGHT + 7*PROPERTY_WIDTH +50, COLOURS["RED"], False, PROPERTY_ENLARGE_WIDTH/2, 50), Button("AUCTION", PROPERTY_HEIGHT + PROPERTY_WIDTH + 270, 9 * PROPERTY_WIDTH +10, COLOURS["DARK BLUE"], True),],#player property actions - mortgage, buy houses etc.
+                        [Button("BID 100", PROPERTY_HEIGHT +10, PROPERTY_HEIGHT+ 7*PROPERTY_WIDTH, COLOURS["RED"],False, PROPERTY_ENLARGE_WIDTH/3), Button("BID 10", PROPERTY_HEIGHT+10+PROPERTY_ENLARGE_WIDTH/3, PROPERTY_HEIGHT+ 7*PROPERTY_WIDTH, COLOURS["ORANGE"], False, PROPERTY_ENLARGE_WIDTH/3), Button("BID 1", PROPERTY_HEIGHT +10 +2*PROPERTY_ENLARGE_WIDTH/3, PROPERTY_HEIGHT+ 7*PROPERTY_WIDTH, COLOURS["PINK"], False, PROPERTY_ENLARGE_WIDTH/3), Button("BID 1", PROPERTY_HEIGHT +10 +2*PROPERTY_ENLARGE_WIDTH/3, PROPERTY_HEIGHT+ 7*PROPERTY_WIDTH, COLOURS["PINK"], False, PROPERTY_ENLARGE_WIDTH/3)],#auction
                         [Button("DONE", BOARD_WIDTH/2, WINDOW_HEIGHT/2, COLOURS["BLACK"], True)]
                         ]
 
@@ -68,9 +70,11 @@ class Board(pygame.Surface):   #this class creates the 40 instances of the locat
             p.draw_propertys(self)
         for i in range(len(list_of_players)):
             list_of_players[i].draw_player_square(self, BOARD_WIDTH, i, WINDOW_WIDTH-BOARD_WIDTH, WINDOW_HEIGHT/len(list_of_players))
+
+
         self.draw_action(action_taken, player_pos) #this will draw graphics on the screen depending on what happens
         self.always_button.draw(self) #this will draw buttons that are always on the screen
-        if action_taken <4:
+        if action_taken <6:
             for b in self.buttons[action_taken]:
                 b.draw(self)
 
@@ -80,23 +84,37 @@ class Board(pygame.Surface):   #this class creates the 40 instances of the locat
 
     def draw_action(self, action_taken, player_pos):
         current_property = self.properties[player_pos]
-        if action_taken == 2 or action_taken == 6:
-            current_property.enlarge_property(self)
+        if action_taken == 2 or action_taken == 4 or action_taken == 6:
+            current_property.enlarge_property(self,1)
             if action_taken == 6:
-                render_text(self, font,f'{current_property.owned.username} owns this property you paid {current_property.rent[str(current_property.amount_houses)]}'
+                n = 2 if current_property.full_set == True and current_property.amount_houses == 0 else 1
+                render_text(self, font,f'{current_property.owned.username} owns this property you paid {n*current_property.rent[str(current_property.amount_houses)]}'
                             , COLOURS["BLACK"], (PROPERTY_HEIGHT + PROPERTY_WIDTH + 120, 9 * PROPERTY_WIDTH +10))
+
+
+        elif action_taken ==5:
+            pygame.draw.rect(self, COLOURS["WHITE"], (PROPERTY_HEIGHT, PROPERTY_HEIGHT, BOARD_WIDTH - PROPERTY_HEIGHT*2, BOARD_WIDTH - PROPERTY_HEIGHT*2))
+            current_property.enlarge_property(self, 0)
+
+        elif action_taken == 7:
+            current_property.enlarge_card(self)
+
 
 
 
     def enlarge_property(self):
         for p in self.properties:
-            if p.check_for_click_prop() and p.houses_price != None:
-                p.enlarge_property(self)
+            if p.check_for_click_prop():
+                if p.purchase != None:
+                    p.enlarge_property(self,1)
+                elif p.height != p.width :
+                    p.enlarge_card(self)
 
     def check_for_button_click(self, which_buttons):
-        if which_buttons < 5:
+        if which_buttons < 6:
             for b in self.buttons[which_buttons]:
-                return b.check_for_press()
+                if b.check_for_press():
+                    return b.text
 
 
 
@@ -120,15 +138,15 @@ class Property(pygame.Surface): #this class is used when drawing the squares to 
         self.colour = COLOURS[colour]
         self.owned = None
         self.amount_houses = 0
+        self.full_set = False
         #COLOUR
 
     def draw_propertys(self, win):
         self.fill((200, 200, 255))
-
         n = (self.x, self.y, self.width / 4, self.height) if self.width > self.height else (self.x, self.y, self.width, self.height / 4)
         pygame.draw.rect(win, self.colour, (n))
-        #if self.owned != None:
-         #   pygame.draw.circle(win, self.owned.colour, (100,100),30) this will draw the players icon on the property to show who owns it
+        if self.owned != None:
+            pygame.draw.rect(win,self.owned.colour,(self.x, self.y, self.width, self.height),5) #this will draw the players icon on the property to show who owns it
         pygame.draw.rect(win, COLOURS["BLACK"], (self.x, self.y, self.width, self.height), 1)
     """create a function which manages the text so it fits within the property space"""
 
@@ -156,19 +174,50 @@ class Property(pygame.Surface): #this class is used when drawing the squares to 
         if pygame.Rect(self.x,self.y,self.width,self.height).collidepoint(x,y):
             return True
 
-    def enlarge_property(self,win):
-        pygame.draw.rect(win, COLOURS["WHITE"], (PROPERTY_HEIGHT+PROPERTY_WIDTH, PROPERTY_HEIGHT, 7*PROPERTY_WIDTH, 9*PROPERTY_WIDTH))
-        pygame.draw.rect(win, COLOURS["BLACK"], (PROPERTY_HEIGHT + PROPERTY_WIDTH + 10, PROPERTY_HEIGHT + 10, 7 * PROPERTY_WIDTH -20,9 * PROPERTY_WIDTH -20),1)
-        colour_box = (PROPERTY_HEIGHT + PROPERTY_WIDTH + 20, PROPERTY_HEIGHT + 20, 7 * PROPERTY_WIDTH -40,2 * PROPERTY_WIDTH -40)
-        x,y = pygame.Rect(colour_box).center
-        pygame.draw.rect(win, self.colour, colour_box)
-        render_text(win, font, self.name, COLOURS["BLACK"], (x,y))
-        for i in range(len(self.rent)):
-            render_text(win, font, f'Rent with {str(i)} house {self.rent[str(i)]}', COLOURS["BLACK"], (x, y + 60 + i*30 ))
-        render_text(win, font, f'Mortgage value {self.mortgage}', COLOURS["BLACK"], (x, y +260))
-        render_text(win, font, f'Houses cost {self.houses_price} each', COLOURS["BLACK"], (x,y +300))
-        render_text(win, font, f'Hotels, {self.houses_price} each plus 4 houses', COLOURS["BLACK"], (x,y+340))
+    def enlarge_property(self, win, pos):
+        n = PROPERTY_HEIGHT + PROPERTY_WIDTH * pos  # if pos = 0 the property is on the left, 1 makes the property in the middle and 2 will put it on the right
+        pygame.draw.rect(win, COLOURS["WHITE"], (n, PROPERTY_HEIGHT, 7 * PROPERTY_WIDTH, 9 * PROPERTY_WIDTH))
+        figures = 1 / 6 * PROPERTY_WIDTH
+        pygame.draw.rect(win, COLOURS["BLACK"], (
+        n + figures, PROPERTY_HEIGHT + figures, 7 * PROPERTY_WIDTH - 2 * figures, 9 * PROPERTY_WIDTH - 2 * figures), 1)
+        colour_box = (n + 2 * figures, PROPERTY_HEIGHT + 2 * figures, 7 * PROPERTY_WIDTH - 4 * figures,
+                      2 * PROPERTY_WIDTH - 4 * figures)
+        x, y = pygame.Rect(colour_box).center
+        if self.houses_price != None:
+            pygame.draw.rect(win, self.colour, colour_box)
+            render_text(win, font, self.name, COLOURS["BLACK"], (x, y))
+            for i in range(len(self.rent)):
+                render_text(win, font, f'Rent with {str(i)} house {self.rent[str(i)]}', COLOURS["BLACK"],
+                            (x, y + PROPERTY_WIDTH + i * PROPERTY_WIDTH / 2))
+            render_text(win, font, f'Mortgage value {self.mortgage}', COLOURS["BLACK"], (x, y + 9 * PROPERTY_WIDTH/2))
+            render_text(win, font, f'Houses cost {self.houses_price} each', COLOURS["BLACK"],
+                        (x, y + 5 * PROPERTY_WIDTH))
+            render_text(win, font, f'Hotels, {self.houses_price} each plus 4 houses', COLOURS["BLACK"],
+                        (x, y + 11 * PROPERTY_WIDTH/2))
+        else:
+            # draw the stations
+            render_text(win, font, f'{self.name}', COLOURS["BLACK"], (x, y))
+            if len(self.rent) > 2:
+                for i in range(len(self.rent)):
+                    render_text(win, font, f'Rent with {str(i + 1)} stations {self.rent[str(i)]}', COLOURS["BLACK"],
+                                (x, y + 2 * PROPERTY_WIDTH + i * PROPERTY_WIDTH / 2))
+                render_text(win, font, f'MORTGAGE VALUE - {self.mortgage}', COLOURS["BLACK"],
+                            (x, y + 5 * PROPERTY_WIDTH))
+            else:
+                # draw the utilitys
+                for i in range(len(self.rent)):
+                    render_text(win, font,
+                                f'If {str(i + 1)} "utility" is owned rent is {self.rent[str(i)]} times amount shown on dice',
+                                COLOURS["BLACK"], (x, y + 4 * PROPERTY_WIDTH + i * PROPERTY_WIDTH / 2))
 
+    def enlarge_card(self, win):
+        pygame.draw.rect(win, COLOURS["WHITE"], (PROPERTY_HEIGHT, PROPERTY_HEIGHT + PROPERTY_WIDTH, 9*PROPERTY_WIDTH, 7*PROPERTY_WIDTH))
+        line = (PROPERTY_HEIGHT, PROPERTY_HEIGHT + PROPERTY_WIDTH, 9 * PROPERTY_WIDTH, 7 * PROPERTY_WIDTH)
+        pygame.draw.rect(win, COLOURS["BLACK"], line,1)
+        x,y = pygame.Rect(line).center
+        render_text(win,font, f'{self.name}', COLOURS["ORANGE"], (x,y))
+        if self.rent != None: #this means they have landed on a tax card and I can use the center co-ordinates instead of re-doing them in the draw_action function
+            render_text(win, font, f'You owe {self.rent}', COLOURS["RED"], (x,y + PROPERTY_WIDTH))
 
 class Button:
     def __init__(self, text, x, y, color, centre, width =WINDOW_WIDTH*15/128, height = WINDOW_WIDTH*5/64):
@@ -188,7 +237,7 @@ class Button:
     def check_for_press(self):
         x,y = pygame.mouse.get_pos()
         if pygame.Rect(self.x,self.y, self.width, self.height).collidepoint(x,y):
-            return self.text
+            return True
 
 
 

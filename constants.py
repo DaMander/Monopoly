@@ -1,4 +1,5 @@
 import pygame
+import textwrap
 # Colours
 COLOURS = {
     "BROWN" : (179,116,6),
@@ -21,6 +22,10 @@ WINDOW_HEIGHT = int(WINDOW_WIDTH*35/64)#700
 PROPERTY_WIDTH = WINDOW_WIDTH * 3/64#80
 PROPERTY_HEIGHT = WINDOW_WIDTH* 1/16#60
 BOARD_WIDTH = WINDOW_WIDTH * 35/64#700
+PROPERTY_ENLARGE_WIDTH = 7 * PROPERTY_WIDTH - (2 * 1/6*PROPERTY_WIDTH)
+PROPERTY_ENLARGE_HEIGHT = 9 * PROPERTY_WIDTH - (2 * 1/6*PROPERTY_WIDTH)
+
+
 
 #property figures
 number_of_properties = 40
@@ -29,7 +34,7 @@ number_of_properties = 40
 
 #player figures
 starting_money = 1500
-
+free_parking_cash = 0
 
 
 #functions used by most files

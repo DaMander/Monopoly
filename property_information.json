@@ -36,7 +36,7 @@
         "colour": "BROWN"
     },
     "4": {
-        "name": "Income tax",
+        "name": "INCOME TAX",
         "purchase": null,
         "rent": 200
     },
@@ -319,12 +319,8 @@
         "name": "WATER WORKS",
         "purchase": 150,
         "rent": {
-            "0": null,
-            "1": null,
-            "2": null,
-            "3": null,
-            "4": null,
-            "5": null
+            "0": 4,
+            "1": 10
         },
         "mortgage": 75
     },
