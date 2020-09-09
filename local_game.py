@@ -12,7 +12,7 @@ win = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 clock = pygame.time.Clock()
 
 
-pl_list = [Player(0, 14, COLOURS["RED"], "Player 1")]#,Player(0, 14, COLOURS["DARK BLUE"], "Player 2")] #Player(0, 14, PINK, "Player 3")
+pl_list = [Player(0, 14, COLOURS["RED"] ,"Player 1")]#,Player(0, 14, COLOURS["DARK BLUE"], "Player 2")] #Player(0, 14, PINK, "Player 3")
 
 board = Board(WINDOW_WIDTH, WINDOW_HEIGHT)#the Board is a class within board.py
 #using the board class it then sets up all the properties needing to be made
@@ -33,7 +33,9 @@ double = False
 action_time = 0
 #this will be used for timers or delays
 
+other_card = None
 board.sort_sets()
+
 
 
 while run:
@@ -44,8 +46,9 @@ while run:
 
 
 
+
         win.fill((200, 200, 255))
-        board.draw(pl_list, pl_list[turn].pos, action_taken)
+        board.draw_background(pl_list)
         # board.draw is in the board class and goes through all the propertys, player squares and buttons that need to be drawn
         for i in pl_list:
             i.draw(board)
@@ -69,35 +72,44 @@ while run:
 
                 elif x == "END TURN":
                     turn += 1
+                    turn %= len(pl_list)
+                    other_card = None
                     action_taken = 0 #this will reset it and then let the next player have their turn
 
                 elif x == "MAKE DEAL":
                     print("gvg")
 
                 elif x == "LOOK AT PROPERTYS":
-                    action_taken = 4
+                    action_taken = 10
 
                 elif x == "PURCHASE":
-                    pl_list[turn].buy_property(board)
-                    action_taken = 1
+                    if pl_list[turn].buy_property(board):
+                        action_taken = 1
 
                 elif x == "AUCTION":
                     auction_list = pl_list
+                    auction = Auction(pl_list, board.properties[pl_list[turn].pos], board)
                     action_taken = 5
 
-                elif x == "BID 100":
-                    pass
-                elif x == "BID 10":
-                    pass
                 elif x == "BID 1":
-                    pass
+                    auction.add_amount(1)
+
+                elif x == "BACK":
+                    action_taken = 10
+
+                elif x == "+ HOUSE":
+                    pl_list[turn].add_house(board, other_card)
+
+                elif x == "- HOUSE":
+                    pl_list[turn].remove_house(board, other_card)
 
 
 
+        if action_taken == 5:
+            auction.draw()
 
 
-
-        if action_taken == 6 or action_taken == 7:
+        elif action_taken == 6 or action_taken == 7:
             action_time = time.time() if action_time == 0 else action_time
             if time.time() - action_time >= 3:
                 if action_taken == 6:
@@ -106,6 +118,18 @@ while run:
                     pl_list[turn].pay_tax(board)
                 action_taken = 1
                 action_time = 0
+
+
+
+        elif action_taken == 10:
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if pl_list[turn].check_owned_property():
+                    other_card = board.enlarge_property()
+                    action_taken = 4
+
+        board.utility_station_rent()
+
+        board.draw_onto_board(pl_list[turn].pos, action_taken, other_card)
 
         #if list(BROWN) == board.properties[pl_list[turn].pos].colour:
          #   print("skrrr skrrr")
@@ -128,8 +152,6 @@ while run:
 
             #this goes through every player in the game and draws them
 
-        board.enlarge_property()
-
 
         win.blit(board, (0, 0))
         """x,y = pygame.mouse.get_pos()
@@ -138,6 +160,6 @@ while run:
         pygame.display.update()
         clock.tick(60)
 
-        turn %= len(pl_list)
+
 
 pygame.quit()

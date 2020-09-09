@@ -44,11 +44,25 @@ class Board(pygame.Surface):   #this class creates the 40 instances of the locat
 
 
         self.buttons = [[Button("ROLL DICE", BOARD_WIDTH/2, WINDOW_HEIGHT/2, COLOURS["GREEN"], True)],
-                        [Button("END TURN", BOARD_WIDTH/2, WINDOW_HEIGHT/2, COLOURS["RED"], True), Button("MAKE DEAL", BOARD_WIDTH/2, 150 + WINDOW_HEIGHT/2, COLOURS["PINK"], True), Button("LOOK AT PROPERTYS", BOARD_WIDTH/2,  WINDOW_HEIGHT/2 -150, COLOURS["YELLOW"], True)],
-                        [Button("PURCHASE", PROPERTY_HEIGHT + PROPERTY_WIDTH + 120, 9 * PROPERTY_WIDTH +10, COLOURS["GREEN"], True), Button("AUCTION", PROPERTY_HEIGHT + PROPERTY_WIDTH + 270, 9 * PROPERTY_WIDTH +10, COLOURS["DARK BLUE"], True)],
+
+                        [Button("END TURN", BOARD_WIDTH/2, WINDOW_HEIGHT/2, COLOURS["RED"], True),
+                         Button("MAKE DEAL", BOARD_WIDTH/2, 150 + WINDOW_HEIGHT/2, COLOURS["PINK"], True),
+                         Button("LOOK AT PROPERTYS", BOARD_WIDTH/2,  WINDOW_HEIGHT/2 -150, COLOURS["YELLOW"], True)],
+
+                        [Button("PURCHASE", PROPERTY_HEIGHT + PROPERTY_WIDTH + 120, 9 * PROPERTY_WIDTH +10, COLOURS["GREEN"], True),
+                         Button("AUCTION", PROPERTY_HEIGHT + PROPERTY_WIDTH + 270, 9 * PROPERTY_WIDTH +10, COLOURS["DARK BLUE"], True)],
+
                         [],#making a deal
-                        [Button("+ HOUSE", PROPERTY_HEIGHT + PROPERTY_WIDTH +10, PROPERTY_HEIGHT + 7*PROPERTY_WIDTH, COLOURS["GREEN"], False, PROPERTY_ENLARGE_WIDTH/2, 50), Button("- HOUSE", PROPERTY_HEIGHT + PROPERTY_WIDTH +10, PROPERTY_HEIGHT + 7*PROPERTY_WIDTH +50, COLOURS["RED"], False, PROPERTY_ENLARGE_WIDTH/2, 50), Button("AUCTION", PROPERTY_HEIGHT + PROPERTY_WIDTH + 270, 9 * PROPERTY_WIDTH +10, COLOURS["DARK BLUE"], True),],#player property actions - mortgage, buy houses etc.
-                        [Button("BID 100", PROPERTY_HEIGHT +10, PROPERTY_HEIGHT+ 7*PROPERTY_WIDTH, COLOURS["RED"],False, PROPERTY_ENLARGE_WIDTH/3), Button("BID 10", PROPERTY_HEIGHT+10+PROPERTY_ENLARGE_WIDTH/3, PROPERTY_HEIGHT+ 7*PROPERTY_WIDTH, COLOURS["ORANGE"], False, PROPERTY_ENLARGE_WIDTH/3), Button("BID 1", PROPERTY_HEIGHT +10 +2*PROPERTY_ENLARGE_WIDTH/3, PROPERTY_HEIGHT+ 7*PROPERTY_WIDTH, COLOURS["PINK"], False, PROPERTY_ENLARGE_WIDTH/3), Button("BID 1", PROPERTY_HEIGHT +10 +2*PROPERTY_ENLARGE_WIDTH/3, PROPERTY_HEIGHT+ 7*PROPERTY_WIDTH, COLOURS["PINK"], False, PROPERTY_ENLARGE_WIDTH/3)],#auction
+
+                        [Button("+ HOUSE", PROPERTY_HEIGHT + PROPERTY_WIDTH +10, PROPERTY_HEIGHT + 7*PROPERTY_WIDTH, COLOURS["GREEN"], False, PROPERTY_ENLARGE_WIDTH/2, 50),
+                         Button("- HOUSE", PROPERTY_HEIGHT + PROPERTY_WIDTH +10, PROPERTY_HEIGHT + 7*PROPERTY_WIDTH +50, COLOURS["RED"], False, PROPERTY_ENLARGE_WIDTH/2, 50),
+                         Button("MORTGAGE", PROPERTY_HEIGHT + PROPERTY_WIDTH +PROPERTY_ENLARGE_WIDTH/2 +10, PROPERTY_HEIGHT + 7*PROPERTY_WIDTH, COLOURS["GREEN"], False, PROPERTY_ENLARGE_WIDTH/2, 50),
+                         Button("UNMORTGAGE", PROPERTY_HEIGHT + PROPERTY_WIDTH +10 + PROPERTY_ENLARGE_WIDTH/2, PROPERTY_HEIGHT + 7*PROPERTY_WIDTH +50, COLOURS["RED"], False, PROPERTY_ENLARGE_WIDTH/2, 50),
+                         Button("BACK", PROPERTY_HEIGHT+ PROPERTY_WIDTH + 10, PROPERTY_HEIGHT, COLOURS["RED"], False, PROPERTY_HEIGHT, PROPERTY_WIDTH/2)],#player property actions - mortgage, buy houses etc.
+
+                        [Button("BID 100", PROPERTY_HEIGHT +10, PROPERTY_HEIGHT+ 7*PROPERTY_WIDTH, COLOURS["RED"],False, PROPERTY_ENLARGE_WIDTH/3),
+                         Button("BID 10", PROPERTY_HEIGHT+10+PROPERTY_ENLARGE_WIDTH/3, PROPERTY_HEIGHT+ 7*PROPERTY_WIDTH, COLOURS["ORANGE"], False, PROPERTY_ENLARGE_WIDTH/3),
+                         Button("BID 1", PROPERTY_HEIGHT +10 +2*PROPERTY_ENLARGE_WIDTH/3, PROPERTY_HEIGHT+ 7*PROPERTY_WIDTH, COLOURS["PINK"], False, PROPERTY_ENLARGE_WIDTH/3)],#auction
                         [Button("DONE", BOARD_WIDTH/2, WINDOW_HEIGHT/2, COLOURS["BLACK"], True)]
                         ]
 
@@ -63,18 +77,20 @@ class Board(pygame.Surface):   #this class creates the 40 instances of the locat
 
 
 
-    def draw(self, list_of_players, player_pos, action_taken):
-
+    def draw_background(self, list_of_players):
         self.fill((200, 200, 255))
         for p in self.properties:
-            p.draw_propertys(self)
+            p.draw_propertys(self) #this goes through all the propertys and draws them to the board
         for i in range(len(list_of_players)):
-            list_of_players[i].draw_player_square(self, BOARD_WIDTH, i, WINDOW_WIDTH-BOARD_WIDTH, WINDOW_HEIGHT/len(list_of_players))
+            list_of_players[i].draw_player_square(self, BOARD_WIDTH, i, WINDOW_WIDTH-BOARD_WIDTH, WINDOW_HEIGHT/len(list_of_players)) #this will draw the rectangles on the right which store player info
 
 
-        self.draw_action(action_taken, player_pos) #this will draw graphics on the screen depending on what happens
+    def draw_onto_board(self,player_pos, action_taken, other_card):
+        self.draw_action(action_taken, player_pos, other_card) #this will draw graphics on the screen depending on what happens
+
         self.always_button.draw(self) #this will draw buttons that are always on the screen
-        if action_taken <6:
+
+        if action_taken <6: #this draws the buttons to the screen depending on what happens
             for b in self.buttons[action_taken]:
                 b.draw(self)
 
@@ -82,19 +98,17 @@ class Board(pygame.Surface):   #this class creates the 40 instances of the locat
 
 
 
-    def draw_action(self, action_taken, player_pos):
-        current_property = self.properties[player_pos]
+    def draw_action(self, action_taken, player_pos, other_card):
+        pos = player_pos if other_card == None else other_card
+        current_property = self.properties[pos]
         if action_taken == 2 or action_taken == 4 or action_taken == 6:
-            current_property.enlarge_property(self,1)
+            current_property.enlarge_property(self,1) #this draws the enlarged property card to the screen
             if action_taken == 6:
                 n = 2 if current_property.full_set == True and current_property.amount_houses == 0 else 1
                 render_text(self, font,f'{current_property.owned.username} owns this property you paid {n*current_property.rent[str(current_property.amount_houses)]}'
                             , COLOURS["BLACK"], (PROPERTY_HEIGHT + PROPERTY_WIDTH + 120, 9 * PROPERTY_WIDTH +10))
 
 
-        elif action_taken ==5:
-            pygame.draw.rect(self, COLOURS["WHITE"], (PROPERTY_HEIGHT, PROPERTY_HEIGHT, BOARD_WIDTH - PROPERTY_HEIGHT*2, BOARD_WIDTH - PROPERTY_HEIGHT*2))
-            current_property.enlarge_property(self, 0)
 
         elif action_taken == 7:
             current_property.enlarge_card(self)
@@ -107,6 +121,7 @@ class Board(pygame.Surface):   #this class creates the 40 instances of the locat
             if p.check_for_click_prop():
                 if p.purchase != None:
                     p.enlarge_property(self,1)
+                    return self.properties.index(p)
                 elif p.height != p.width :
                     p.enlarge_card(self)
 
@@ -115,6 +130,16 @@ class Board(pygame.Surface):   #this class creates the 40 instances of the locat
             for b in self.buttons[which_buttons]:
                 if b.check_for_press():
                     return b.text
+
+
+    def utility_station_rent(self):
+        amount = -1
+        for p in self.sorted_sets["BLACK"]:
+            if p.owned != None:
+                amount += 1
+        for p in self.sorted_sets["BLACK"]:
+            p.amount_houses = amount
+
 
 
 
@@ -141,6 +166,8 @@ class Property(pygame.Surface): #this class is used when drawing the squares to 
         self.full_set = False
         #COLOUR
 
+
+
     def draw_propertys(self, win):
         self.fill((200, 200, 255))
         n = (self.x, self.y, self.width / 4, self.height) if self.width > self.height else (self.x, self.y, self.width, self.height / 4)
@@ -148,12 +175,18 @@ class Property(pygame.Surface): #this class is used when drawing the squares to 
         if self.owned != None:
             pygame.draw.rect(win,self.owned.colour,(self.x, self.y, self.width, self.height),5) #this will draw the players icon on the property to show who owns it
         pygame.draw.rect(win, COLOURS["BLACK"], (self.x, self.y, self.width, self.height), 1)
+        if self.houses_price != None:
+            if self.amount_houses > 4:
+                    pygame.draw.rect(win, COLOURS["RED"], (self.x+ 20, self.y +40, 10, 10))
+            else:
+                for i in range(self.amount_houses):
+                    pygame.draw.rect(win, COLOURS["GREEN"], (i*15 + self.x, self.y +40, 10, 10))
     """create a function which manages the text so it fits within the property space"""
 
-    def property_actions(self):
+    def property_actions(self, player):
         if self.purchase != None and self.owned == None: #this means it's an unowned property card
             return 2
-        elif self.purchase != None and self.owned != None:#this means it's an owned property
+        elif self.purchase != None and self.owned != None and self.owned != player:#this means it's an owned property
             return 6
         elif self.purchase == None and self.rent != None:#this means it is a tax card
             return 7
@@ -169,12 +202,14 @@ class Property(pygame.Surface): #this class is used when drawing the squares to 
 
 
 
+
+
     def check_for_click_prop(self):
         x, y = pygame.mouse.get_pos()
         if pygame.Rect(self.x,self.y,self.width,self.height).collidepoint(x,y):
             return True
 
-    def enlarge_property(self, win, pos):
+    def enlarge_property(self, win, pos):#this is graphically used to show a card which can be purchased onto the board
         n = PROPERTY_HEIGHT + PROPERTY_WIDTH * pos  # if pos = 0 the property is on the left, 1 makes the property in the middle and 2 will put it on the right
         pygame.draw.rect(win, COLOURS["WHITE"], (n, PROPERTY_HEIGHT, 7 * PROPERTY_WIDTH, 9 * PROPERTY_WIDTH))
         figures = 1 / 6 * PROPERTY_WIDTH
@@ -230,6 +265,7 @@ class Button:
 
     def draw(self, win):
         pygame.draw.rect(win, self.color, (self.x, self.y, self.width, self.height))
+        pygame.draw.rect(win, COLOURS["BLACK"], (self.x, self.y, self.width, self.height),1)
         font = pygame.font.SysFont("comicsans", int(WINDOW_WIDTH*1/32))
         text = font.render(self.text, 1, (255,255,255))
         win.blit(text, (self.x + round(self.width/2) - round(text.get_width()/2), self.y + round(self.height/2) - round(text.get_height()/2)))
@@ -249,6 +285,7 @@ class Button:
 
 with open("property_information.json") as f:
     file = json.load(f)
+    f.close()
 
 
 
