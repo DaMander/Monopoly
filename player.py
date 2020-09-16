@@ -31,8 +31,9 @@ class Player:
         pygame.draw.circle(win, self.colour, (x, y), self.radius)
         pygame.draw.circle(win, COLOURS["BLACK"], (x,y), self.radius,1)
 
-    def draw_player_square(self,win, x, variable, width, height):
+    def draw_player_square(self,win, x, variable, width, height,turn):
         squ = (x, variable*height , width, height)
+        pygame.draw.rect(win, COLOURS["GREEN"], squ, 5) if turn== variable else None
         pygame.draw.rect(win, COLOURS["BLACK"], (squ),1)
         render_text(win, font, self.username, COLOURS["BLACK"], (pygame.Rect(squ).centerx, pygame.Rect(squ).centery -height/4))
         render_text(win, font, str(int(self.money)), COLOURS["BLACK"], (pygame.Rect(squ).center))
@@ -78,8 +79,8 @@ class Player:
 
 
     def check_for_full_set(self, win, set_length):
-        print(len(win.sorted_sets[list(COLOURS.keys())[list(COLOURS.values()).index(win.properties[self.pos].colour)]]))
         if len(win.sorted_sets[list(COLOURS.keys())[list(COLOURS.values()).index(win.properties[self.pos].colour)]]) == set_length:
+
             return True
         else:
             return False
@@ -95,11 +96,12 @@ class Player:
 
 
 
-    def buy_property(self, win):
+    def buy_property(self, win, other_player = None, amount = None):
         #when this is but into the main function the win will become the instance of the board class so the player and board can work in unison
-        space = win.properties[self.pos]
-        if self.check_they_can_pay(space.purchase):
-            self.money -= space.purchase
+        space = win.properties[self.pos if other_player == None else other_player.pos]
+        amount = space.purchase if amount == None else amount
+        if self.check_they_can_pay(amount):
+            self.money -= amount
             self.add_property(space,win)
             space.owned = self
             return True
@@ -107,14 +109,15 @@ class Player:
     def pay_rent(self, win):
         #this will be used to player who owns the property that the current player has landed on and tax that the player lands on
         space = win.properties[self.pos]
-        if space.owned != self:
+        if space.owned != self and space.mortgage != True:
             rent = space.rent[str(space.amount_houses)]
-            if space.full_set == True:
+            if space.full_set == True and space.amount_houses == 0:
                 rent *= 2
             if self.check_they_can_pay(rent):
                 self.money -= rent
                 space.owned.money += rent
                 return True
+            #create function that will identify utility card and then x by dice roll
 
     def pay_tax(self, win):
         space = win.properties[self.pos]
@@ -135,6 +138,21 @@ class Player:
                 self.money += current_property.houses_price/2
                 current_property.amount_houses -= 1
 
+    def mortgage(self, win, pos):
+        current_property = win.properties[pos]
+        if current_property.mortgage == False:
+            self.money += current_property.purchase/2
+            current_property.mortgage = True
+
+    def unmortgage(self, win, pos):
+        current_property = win.properties[pos]
+        if current_property.mortgage:
+            self.money -= current_property.purchase/2 + current_property.purchase/10
+            current_property.mortgage = False
+
+
+
+
 
 
 
@@ -145,7 +163,7 @@ class Player:
 
 class Auction:
     def __init__(self, auction_list, property, win):
-        self.players = auction_list
+        self.players = auction_list.copy()
         self.amounts = []
         self.amount = 0
         self.property = property
@@ -159,14 +177,26 @@ class Auction:
         for i in range(6):
             amount_boxes = (490, 90 + i* 520/ 6, 130, 520/ 6)
             x,y = pygame.Rect(amount_boxes).center
-            pygame.draw.rect(self.surface,COLOURS["BLACK"], amount_boxes,1)
             if len(self.amounts) > i:
                 render_text(self.surface, font, str(self.amounts[i]),COLOURS["BLACK"], (x,y))
+                pygame.draw.rect(self.surface, self.players[(self.turn + i) % len(self.players)].colour, amount_boxes,
+                                 1)
 
     def add_amount(self, amount):
         self.amount += amount
         self.amounts = [self.amount] + self.amounts
         self.turn += 1
+        self.turn %= len(self.players)
+
+    def leave(self):
+        self.players.pop(self.turn)
+        self.turn %= len(self.players)
+
+    def check_finished(self):
+        if len(self.players) == 1:
+            return True
+
+
 
 
 

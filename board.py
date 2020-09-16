@@ -1,8 +1,9 @@
+import random
+
 import pygame
 import json
 from constants import *
-from player import Player
-import textwrap
+from community_chest_and_chance import *
 pygame.init()
 
 
@@ -12,6 +13,7 @@ pygame.init()
 class Board(pygame.Surface):   #this class creates the 40 instances of the location class needed fot the 40 propertys in monopoly
     def __init__(self, width, height):
         super().__init__((width, height))
+        self.cards = []
         self.properties = []
         self.sorted_sets = {
             "BROWN": [],
@@ -41,6 +43,9 @@ class Board(pygame.Surface):   #this class creates the 40 instances of the locat
         self.properties.append(Property("corner", BOARD_WIDTH-PROPERTY_HEIGHT, 0, *file[str(len(self.properties))].values()))
         for i in range(9):
             self.properties.append(Property("hori", BOARD_WIDTH-PROPERTY_HEIGHT, PROPERTY_HEIGHT + (i * PROPERTY_WIDTH), *file[str(len(self.properties))].values()))
+        for i in range(len(comm_cards)):
+            self.cards.append(Card(*comm_cards[str(len(self.cards))].values()))
+
 
 
         self.buttons = [[Button("ROLL DICE", BOARD_WIDTH/2, WINDOW_HEIGHT/2, COLOURS["GREEN"], True)],
@@ -62,8 +67,8 @@ class Board(pygame.Surface):   #this class creates the 40 instances of the locat
 
                         [Button("BID 100", PROPERTY_HEIGHT +10, PROPERTY_HEIGHT+ 7*PROPERTY_WIDTH, COLOURS["RED"],False, PROPERTY_ENLARGE_WIDTH/3),
                          Button("BID 10", PROPERTY_HEIGHT+10+PROPERTY_ENLARGE_WIDTH/3, PROPERTY_HEIGHT+ 7*PROPERTY_WIDTH, COLOURS["ORANGE"], False, PROPERTY_ENLARGE_WIDTH/3),
-                         Button("BID 1", PROPERTY_HEIGHT +10 +2*PROPERTY_ENLARGE_WIDTH/3, PROPERTY_HEIGHT+ 7*PROPERTY_WIDTH, COLOURS["PINK"], False, PROPERTY_ENLARGE_WIDTH/3)],#auction
-                        [Button("DONE", BOARD_WIDTH/2, WINDOW_HEIGHT/2, COLOURS["BLACK"], True)]
+                         Button("BID 1", PROPERTY_HEIGHT +10 +2*PROPERTY_ENLARGE_WIDTH/3, PROPERTY_HEIGHT+ 7*PROPERTY_WIDTH, COLOURS["PINK"], False, PROPERTY_ENLARGE_WIDTH/3),#auction
+                         Button("LEAVE", PROPERTY_HEIGHT+ PROPERTY_WIDTH + 10, PROPERTY_HEIGHT, COLOURS["RED"], False, 2*PROPERTY_HEIGHT, PROPERTY_WIDTH/2)]
                         ]
 
         self.always_button = Button("BANK", WINDOW_WIDTH-150,0,COLOURS["RED"], False) #this button will be used for the player to delcare bankruptcy
@@ -77,12 +82,12 @@ class Board(pygame.Surface):   #this class creates the 40 instances of the locat
 
 
 
-    def draw_background(self, list_of_players):
+    def draw_background(self, list_of_players, turn):
         self.fill((200, 200, 255))
         for p in self.properties:
             p.draw_propertys(self) #this goes through all the propertys and draws them to the board
         for i in range(len(list_of_players)):
-            list_of_players[i].draw_player_square(self, BOARD_WIDTH, i, WINDOW_WIDTH-BOARD_WIDTH, WINDOW_HEIGHT/len(list_of_players)) #this will draw the rectangles on the right which store player info
+            list_of_players[i].draw_player_square(self, BOARD_WIDTH, i, WINDOW_WIDTH-BOARD_WIDTH, WINDOW_HEIGHT/len(list_of_players),turn) #this will draw the rectangles on the right which store player info
 
 
     def draw_onto_board(self,player_pos, action_taken, other_card):
@@ -110,8 +115,11 @@ class Board(pygame.Surface):   #this class creates the 40 instances of the locat
 
 
 
-        elif action_taken == 7:
+        elif action_taken == 7 or action_taken == 8:
             current_property.enlarge_card(self)
+            """if action_taken == 8:
+                x = random.randint(0,len(self.cards)-1)
+                render_text(self, font, f'{self.cards[x].text}', COLOURS["BLACK"],(300,300))"""
 
 
 
@@ -132,13 +140,18 @@ class Board(pygame.Surface):   #this class creates the 40 instances of the locat
                     return b.text
 
 
-    def utility_station_rent(self):
-        amount = -1
-        for p in self.sorted_sets["BLACK"]:
-            if p.owned != None:
-                amount += 1
-        for p in self.sorted_sets["BLACK"]:
-            p.amount_houses = amount
+    def utility_station_rent(self, colour):
+        owned_players = []
+        for p in self.sorted_sets[colour]:
+            owned_players.append(p.owned)
+        counts = [[x, owned_players.count(x)] for x in set(owned_players)]
+        for i in range(len(counts)):
+            if counts[i][0] != None:
+                for p in self.sorted_sets[colour]:
+                    if p.owned == counts[i][0]:
+                        p.amount_houses = counts[i][1] -1
+
+
 
 
 
@@ -149,7 +162,7 @@ class Board(pygame.Surface):   #this class creates the 40 instances of the locat
 
 
 class Property(pygame.Surface): #this class is used when drawing the squares to the board, used in the Board class to allow all the instances of location to be added to a list
-    def __init__(self, orientation, x, y, name, purchase = None, rent = None, mortgage = None, houses_price = None, colour = "BOARD COLOUR"):
+    def __init__(self, orientation, x, y, name, purchase = None, rent = None, houses_price = None, colour = "BOARD COLOUR"):
         super().__init__((PROPERTY_WIDTH, PROPERTY_HEIGHT))
         self.width = PROPERTY_WIDTH if orientation == "vert" else PROPERTY_HEIGHT
         self.height = PROPERTY_WIDTH if orientation == "hori" else PROPERTY_HEIGHT
@@ -158,7 +171,7 @@ class Property(pygame.Surface): #this class is used when drawing the squares to 
         self.name = name
         self.purchase = purchase
         self.rent = rent
-        self.mortgage = mortgage
+        self.mortgage = False
         self.houses_price = houses_price
         self.colour = COLOURS[colour]
         self.owned = None
@@ -181,22 +194,23 @@ class Property(pygame.Surface): #this class is used when drawing the squares to 
             else:
                 for i in range(self.amount_houses):
                     pygame.draw.rect(win, COLOURS["GREEN"], (i*15 + self.x, self.y +40, 10, 10))
+        if self.mortgage:
+            pygame.draw.line(win, COLOURS["RED"], (self.x, self.y), (self.x + self.width, self.y + self.height))
     """create a function which manages the text so it fits within the property space"""
 
     def property_actions(self, player):
         if self.purchase != None and self.owned == None: #this means it's an unowned property card
             return 2
-        elif self.purchase != None and self.owned != None and self.owned != player:#this means it's an owned property
+        elif self.purchase != None and self.owned != None and self.owned != player and self.mortgage == False:#this means it's an owned property
             return 6
         elif self.purchase == None and self.rent != None:#this means it is a tax card
             return 7
         elif self.name == "COMMUNITY CHEST":
-            return 1
+            return 8
         elif self.name == "CHANCE":
             return 1
         else:
             return 1
-
 
 
 
@@ -224,7 +238,7 @@ class Property(pygame.Surface): #this class is used when drawing the squares to 
             for i in range(len(self.rent)):
                 render_text(win, font, f'Rent with {str(i)} house {self.rent[str(i)]}', COLOURS["BLACK"],
                             (x, y + PROPERTY_WIDTH + i * PROPERTY_WIDTH / 2))
-            render_text(win, font, f'Mortgage value {self.mortgage}', COLOURS["BLACK"], (x, y + 9 * PROPERTY_WIDTH/2))
+            render_text(win, font, f'Mortgage value {int(self.purchase/2)}', COLOURS["BLACK"], (x, y + 9 * PROPERTY_WIDTH/2))
             render_text(win, font, f'Houses cost {self.houses_price} each', COLOURS["BLACK"],
                         (x, y + 5 * PROPERTY_WIDTH))
             render_text(win, font, f'Hotels, {self.houses_price} each plus 4 houses', COLOURS["BLACK"],
@@ -236,7 +250,7 @@ class Property(pygame.Surface): #this class is used when drawing the squares to 
                 for i in range(len(self.rent)):
                     render_text(win, font, f'Rent with {str(i + 1)} stations {self.rent[str(i)]}', COLOURS["BLACK"],
                                 (x, y + 2 * PROPERTY_WIDTH + i * PROPERTY_WIDTH / 2))
-                render_text(win, font, f'MORTGAGE VALUE - {self.mortgage}', COLOURS["BLACK"],
+                render_text(win, font, f'MORTGAGE VALUE - {int(self.purchase/2)}', COLOURS["BLACK"],
                             (x, y + 5 * PROPERTY_WIDTH))
             else:
                 # draw the utilitys

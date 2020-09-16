@@ -13,7 +13,6 @@
             "4": 160,
             "5": 250
         },
-        "mortgage": 30,
         "houses price": 50,
         "colour": "BROWN"
     },
@@ -31,7 +30,6 @@
             "4": 320,
             "5": 450
         },
-        "mortgage": 30,
         "houses price": 50,
         "colour": "BROWN"
     },
@@ -49,7 +47,6 @@
             "2": 100,
             "3": 200
         },
-        "mortgage": 100,
         "houses price": null,
         "colour": "BLACK"
     },
@@ -64,7 +61,6 @@
             "4": 400,
             "5": 550
         },
-        "mortgage": 30,
         "houses price": 50,
         "colour": "LIGHT BLUE"
 
@@ -83,7 +79,6 @@
             "4": 400,
             "5": 550
         },
-        "mortgage": 50,
         "houses price": 50,
         "colour": "LIGHT BLUE"
     },
@@ -98,7 +93,6 @@
             "4": 450,
             "5": 600
         },
-        "mortgage": 70,
         "houses price": 50,
         "colour": "LIGHT BLUE"
     },
@@ -116,7 +110,6 @@
             "4": 625,
             "5": 750
         },
-        "mortgage": 70,
         "houses price": 100,
         "colour": "PINK"
     },
@@ -126,8 +119,7 @@
         "rent": {
             "0": 4,
             "1": 10
-        },
-        "mortgage": 75
+        }
     },
     "13": {
         "name": "WHITEHALL",
@@ -140,7 +132,6 @@
             "4": 625,
             "5": 750
         },
-        "mortgage": 70,
         "houses price": 100,
         "colour": "PINK"
     },
@@ -155,7 +146,6 @@
             "4": 625,
             "5": 750
         },
-        "mortgage": 70,
         "houses price": 100,
         "colour": "PINK"
     },
@@ -168,7 +158,6 @@
             "2": 100,
             "3": 200
         },
-        "mortgage": 100,
         "houses price": null,
         "colour": "BLACK"
     },
@@ -183,7 +172,6 @@
             "4": 750,
             "5": 950
         },
-        "mortgage": 90,
         "houses price": 100,
         "colour": "ORANGE"
     },
@@ -201,7 +189,6 @@
             "4": 750,
             "5": 950
         },
-        "mortgage": 90,
         "houses price": 100,
         "colour": "ORANGE"
     },
@@ -216,7 +203,6 @@
             "4": 800,
             "5": 1000
         },
-        "mortgage": 100,
         "houses price": 100,
         "colour": "ORANGE"
     },
@@ -234,7 +220,6 @@
             "4": 875,
             "5": 1050
         },
-        "mortgage": 110,
         "houses price": 150,
         "colour": "RED"
     },
@@ -252,7 +237,6 @@
             "4": 875,
             "5": 1050
         },
-        "mortgage": 110,
         "houses price": 150,
         "colour": "RED"
     },
@@ -267,7 +251,6 @@
             "4": 925,
             "5": 1100
         },
-        "mortgage": 120,
         "houses price": 150,
         "colour": "RED"
     },
@@ -280,7 +263,6 @@
             "2": 100,
             "3": 200
         },
-        "mortgage": 100,
         "houses price": null,
         "colour": "BLACK"
 
@@ -296,7 +278,6 @@
             "4": 975,
             "5": 1150
         },
-        "mortgage": 130,
         "houses price": 150,
         "colour": "YELLOW"
     },
@@ -311,7 +292,6 @@
             "4": 975,
             "5": 1150
         },
-        "mortgage": 130,
         "houses price": 150,
         "colour": "YELLOW"
     },
@@ -321,8 +301,7 @@
         "rent": {
             "0": 4,
             "1": 10
-        },
-        "mortgage": 75
+        }
     },
     "29": {
         "name": "PICCADILLY",
@@ -335,7 +314,6 @@
             "4": 1025,
             "5": 1200
         },
-        "mortgage": 140,
         "houses price": 150,
         "colour": "YELLOW"
     },
@@ -353,7 +331,6 @@
             "4": 1100,
             "5": 1275
         },
-        "mortgage": 150,
         "houses price": 200,
         "colour": "GREEN"
     },
@@ -368,7 +345,6 @@
             "4": 1100,
             "5": 1275
         },
-        "mortgage": 150,
         "houses price": 200,
         "colour": "GREEN"
     },
@@ -386,7 +362,6 @@
             "4": 1200,
             "5": 1400
         },
-        "mortgage": 160,
         "houses price": 200,
         "colour": "GREEN"
     },
@@ -399,7 +374,6 @@
             "2": 100,
             "3": 200
         },
-        "mortgage": 100,
         "houses price": null,
         "colour": "BLACK"
     },
@@ -417,7 +391,6 @@
             "4": 1300,
             "5": 1500
         },
-        "mortgage": 175,
         "houses price": 200,
         "colour": "DARK BLUE"
     },
@@ -437,7 +410,6 @@
             "4": 1700,
             "5": 2000
         },
-        "mortgage": 200,
         "houses price": 200,
         "colour": "DARK BLUE"
     }
