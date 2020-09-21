@@ -35,15 +35,15 @@ class Player:
         squ = (x, variable*height , width, height)
         pygame.draw.rect(win, COLOURS["GREEN"], squ, 5) if turn== variable else None
         pygame.draw.rect(win, COLOURS["BLACK"], (squ),1)
-        render_text(win, font, self.username, COLOURS["BLACK"], (pygame.Rect(squ).centerx, pygame.Rect(squ).centery -height/4))
-        render_text(win, font, str(int(self.money)), COLOURS["BLACK"], (pygame.Rect(squ).center))
+        render_text(win, font, self.username, self.colour, (pygame.Rect(squ).centerx- width/4, pygame.Rect(squ).centery -height/4))
+        render_text(win, font, str(int(self.money)), COLOURS["BLACK"], (pygame.Rect(squ).centerx, pygame.Rect(squ).centery - height/4))
         set_dist = 0
         for sets in self.owned_propertys:
             set_dist +=1
             prop_dist = 0
             for p in sets:
-                pygame.draw.rect(win, p.colour, (pygame.Rect(squ).midleft[0] + set_dist *25, pygame.Rect(squ).midleft[1] + height/4 + prop_dist* 25, 20, 20))
-                pygame.draw.rect(win, COLOURS["BLACK"], (pygame.Rect(squ).midleft[0] + set_dist*25, pygame.Rect(squ).midleft[1] + height/4 + prop_dist*25, 20, 20),1)
+                pygame.draw.rect(win, p.colour, (pygame.Rect(squ).midleft[0] + set_dist *25, pygame.Rect(squ).midleft[1] + prop_dist* 25, 20, 20))
+                pygame.draw.rect(win, COLOURS["BLACK"], (pygame.Rect(squ).midleft[0] + set_dist*25, pygame.Rect(squ).midleft[1] + prop_dist*25, 20, 20),1)
                 prop_dist +=1
 
     def property_action(self, win):
@@ -90,7 +90,7 @@ class Player:
         for sets in self.owned_propertys:
             for p in sets:
                 if pygame.Rect(p.x, p.y, p.width, p.height).collidepoint(x,y):
-                    return True
+                    return p
 
 
 
@@ -113,6 +113,7 @@ class Player:
             rent = space.rent[str(space.amount_houses)]
             if space.full_set == True and space.amount_houses == 0:
                 rent *= 2
+
             if self.check_they_can_pay(rent):
                 self.money -= rent
                 space.owned.money += rent
@@ -181,6 +182,7 @@ class Auction:
                 render_text(self.surface, font, str(self.amounts[i]),COLOURS["BLACK"], (x,y))
                 pygame.draw.rect(self.surface, self.players[(self.turn + i) % len(self.players)].colour, amount_boxes,
                                  1)
+        render_text(self.surface, font, self.players[self.turn].username, COLOURS["GREEN"], (WINDOW_WIDTH/2, WINDOW_HEIGHT/2))
 
     def add_amount(self, amount):
         self.amount += amount
@@ -195,6 +197,38 @@ class Auction:
     def check_finished(self):
         if len(self.players) == 1:
             return True
+
+class Deal:
+    def __init__(self, player, targeted_player, win):
+        self.player = player
+        self.targeted_player = targeted_player
+        self.money_give = 0
+        self.money_get = 0
+        self.propertys_give = []
+        self.propertys_get = []
+        self.surface = win
+
+    def draw(self):
+        rect = (
+            PROPERTY_HEIGHT, PROPERTY_HEIGHT, BOARD_WIDTH - PROPERTY_HEIGHT * 2, BOARD_WIDTH - PROPERTY_HEIGHT * 2)
+        pygame.draw.rect(self.surface, COLOURS["WHITE"], rect)
+        x,y = pygame.Rect(rect).midtop
+        pygame.draw.line(self.surface,COLOURS["BLACK"], (x,y), (x, y + (BOARD_WIDTH - PROPERTY_HEIGHT *2)))
+        render_text(self.surface, font, self.player.username, self.player.colour, ((x + PROPERTY_HEIGHT)/2, y +20))
+        render_text(self.surface, font, self.targeted_player.username, self.targeted_player.colour, (x + (x-PROPERTY_HEIGHT)/2, y +20))
+        print(len(self.propertys_give))
+        if len(self.propertys_give) != 0:
+            for i in range(len(self.propertys_give)):
+                render_text(self.surface, font, self.propertys_give[i].name, self.propertys_give[i].colour, ((x + PROPERTY_HEIGHT)/2, y +40 +i*20))
+
+    def add_propertys(self):
+        property = self.player.check_owned_property()
+        if property != None:
+            self.propertys_give.remove(property) if property in self.propertys_give else self.propertys_give.append(property)
+            self.propertys_get.remove(property) if property in self.propertys_get else self.propertys_give.append(property)
+
+
+
 
 
 

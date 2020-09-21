@@ -77,7 +77,8 @@ while run:
                     action_taken = 0 #this will reset it and then let the next player have their turn
 
                 elif x == "MAKE DEAL":
-                    print("gvg")
+                    deal = Deal(pl_list[0], pl_list[1], board)
+                    action_taken = 3
 
                 elif x == "LOOK AT PROPERTYS":
                     action_taken = 10
@@ -87,7 +88,6 @@ while run:
                         action_taken = 1
 
                 elif x == "AUCTION":
-                    auction_list = pl_list
                     auction = Auction(pl_list, board.properties[pl_list[turn].pos], board)
                     action_taken = 5
 
@@ -118,6 +118,11 @@ while run:
                 elif x == "LEAVE":
                     auction.leave()
 
+
+        if action_taken == 3:
+            deal.draw()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                deal.add_propertys()
 
 
         if action_taken == 5:
@@ -177,11 +182,7 @@ while run:
         pygame.display.update()
         clock.tick(60)
 
-        for players in pl_list:
-            print()
-            for sets in players.owned_propertys:
-                for propertys in sets:
-                    print(propertys.name)
+
 
 
 

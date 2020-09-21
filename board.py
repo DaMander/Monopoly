@@ -57,7 +57,10 @@ class Board(pygame.Surface):   #this class creates the 40 instances of the locat
                         [Button("PURCHASE", PROPERTY_HEIGHT + PROPERTY_WIDTH + 120, 9 * PROPERTY_WIDTH +10, COLOURS["GREEN"], True),
                          Button("AUCTION", PROPERTY_HEIGHT + PROPERTY_WIDTH + 270, 9 * PROPERTY_WIDTH +10, COLOURS["DARK BLUE"], True)],
 
-                        [],#making a deal
+                        [#Button("ACCEPT", PROPERTY_HEIGHT +10, PROPERTY_HEIGHT+ 7*PROPERTY_WIDTH, COLOURS["GREEN"],False, PROPERTY_ENLARGE_WIDTH/3),
+                         #Button("COUNTER", PROPERTY_HEIGHT+10+PROPERTY_ENLARGE_WIDTH/3, PROPERTY_HEIGHT+ 7*PROPERTY_WIDTH, COLOURS["ORANGE"], False, PROPERTY_ENLARGE_WIDTH/3),
+                         #Button("REJECT", PROPERTY_HEIGHT + 10 + 2 * PROPERTY_ENLARGE_WIDTH / 3,PROPERTY_HEIGHT + 7 * PROPERTY_WIDTH, COLOURS["RED"], False,PROPERTY_ENLARGE_WIDTH / 3)
+                         ],#making a deal
 
                         [Button("+ HOUSE", PROPERTY_HEIGHT + PROPERTY_WIDTH +10, PROPERTY_HEIGHT + 7*PROPERTY_WIDTH, COLOURS["GREEN"], False, PROPERTY_ENLARGE_WIDTH/2, 50),
                          Button("- HOUSE", PROPERTY_HEIGHT + PROPERTY_WIDTH +10, PROPERTY_HEIGHT + 7*PROPERTY_WIDTH +50, COLOURS["RED"], False, PROPERTY_ENLARGE_WIDTH/2, 50),
@@ -112,6 +115,9 @@ class Board(pygame.Surface):   #this class creates the 40 instances of the locat
                 n = 2 if current_property.full_set == True and current_property.amount_houses == 0 else 1
                 render_text(self, font,f'{current_property.owned.username} owns this property you paid {n*current_property.rent[str(current_property.amount_houses)]}'
                             , COLOURS["BLACK"], (PROPERTY_HEIGHT + PROPERTY_WIDTH + 120, 9 * PROPERTY_WIDTH +10))
+
+
+
 
 
 
