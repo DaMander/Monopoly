@@ -12,7 +12,7 @@ win = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 clock = pygame.time.Clock()
 
 
-pl_list = [Player(0, 14, COLOURS["RED"] ,"Player 1"),Player(0, 14, COLOURS["DARK BLUE"], "Player 2"), Player(0, 14, COLOURS["YELLOW"], "Player 3")]
+pl_list = [Player(0, 14, COLOURS["RED"] ,"Player 1"),Player(0, 14, COLOURS["DARK BLUE"], "Player 2")] #Player(0, 14, COLOURS["YELLOW"], "Player 3")]
 
 board = Board(WINDOW_WIDTH, WINDOW_HEIGHT)#the Board is a class within board.py
 #using the board class it then sets up all the properties needing to be made
@@ -81,7 +81,7 @@ while run:
                     action_taken = 3
 
                 elif x == "LOOK AT PROPERTYS":
-                    action_taken = 10
+                    action_taken = 11
 
                 elif x == "PURCHASE":
                     if pl_list[turn].buy_property(board):
@@ -89,7 +89,7 @@ while run:
 
                 elif x == "AUCTION":
                     auction = Auction(pl_list, board.properties[pl_list[turn].pos], board)
-                    action_taken = 5
+                    action_taken = 6
 
                 elif x == "BID 1":
                     auction.add_amount(1)
@@ -118,37 +118,47 @@ while run:
                 elif x == "LEAVE":
                     auction.leave()
 
+                elif x == "FINISHED":
+                    action_taken = 4
 
-        if action_taken == 3:
+                elif x == "ACCEPT":
+                    action_taken = 1
+                    deal.accept()
+
+
+
+
+        if action_taken == 3 or action_taken == 4:
             deal.draw()
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                deal.add_propertys()
+            if action_taken == 3:
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    deal.add_propertys()
 
 
-        if action_taken == 5:
+        if action_taken == 6:
             auction.draw()
             if auction.check_finished():
                 auction.players[0].buy_property(board, pl_list[turn], auction.amount)
                 action_taken = 1
 
 
-        elif action_taken == 6 or action_taken == 7  or action_taken == 8:
+        elif action_taken == 7 or action_taken == 8  or action_taken == 9:
             action_time = time.time() if action_time == 0 else action_time
             if time.time() - action_time >= 3:
-                if action_taken == 6:
+                if action_taken == 7:
                     pl_list[turn].pay_rent(board)
-                elif action_taken == 7:
+                elif action_taken == 8:
                     pl_list[turn].pay_tax(board)
                 action_taken = 1
                 action_time = 0
 
 
 
-        elif action_taken == 10:
+        elif action_taken == 11:
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if pl_list[turn].check_owned_property():
                     other_card = board.enlarge_property()
-                    action_taken = 4
+                    action_taken = 5
 
         board.utility_station_rent("BLACK")
         board.utility_station_rent("BOARD COLOUR")
@@ -171,6 +181,8 @@ while run:
 
 
 
+        x,y = pygame.mouse.get_pos()
+        render_text(board,font, pl_list[turn].username, COLOURS["BLACK"], (x,y))
 
 
 

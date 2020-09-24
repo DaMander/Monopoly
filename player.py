@@ -62,6 +62,7 @@ class Player:
             self.money += 200
 
     def add_property(self, property, win):
+        print(property.name)
         added = False
         for set in self.owned_propertys:
             for p in set:
@@ -73,6 +74,14 @@ class Player:
         if added == False:
             self.owned_propertys.append([property])
             self.owned_propertys.sort(key= lambda x: win.properties.index(x[0]))
+
+    def remove_property(self, property):
+        for set in self.owned_propertys:
+            if property in set:
+                set.remove(property)
+                break
+
+
 
     def find_position(self, win, elem):
         return win.properties.index(elem[0])
@@ -216,16 +225,33 @@ class Deal:
         pygame.draw.line(self.surface,COLOURS["BLACK"], (x,y), (x, y + (BOARD_WIDTH - PROPERTY_HEIGHT *2)))
         render_text(self.surface, font, self.player.username, self.player.colour, ((x + PROPERTY_HEIGHT)/2, y +20))
         render_text(self.surface, font, self.targeted_player.username, self.targeted_player.colour, (x + (x-PROPERTY_HEIGHT)/2, y +20))
-        print(len(self.propertys_give))
-        if len(self.propertys_give) != 0:
-            for i in range(len(self.propertys_give)):
-                render_text(self.surface, font, self.propertys_give[i].name, self.propertys_give[i].colour, ((x + PROPERTY_HEIGHT)/2, y +40 +i*20))
+        for i in range(len(self.propertys_give)):
+            render_text(self.surface, font, self.propertys_give[i].name, self.propertys_give[i].colour, ((x + PROPERTY_HEIGHT)/2, y +50 +i*30))
+        for i in range(len(self.propertys_get)):
+            render_text(self.surface, font, self.propertys_get[i].name, self.propertys_get[i].colour, (x + (x-PROPERTY_HEIGHT)/2, y +50 + i*30) )
+
+
+
+
 
     def add_propertys(self):
-        property = self.player.check_owned_property()
-        if property != None:
-            self.propertys_give.remove(property) if property in self.propertys_give else self.propertys_give.append(property)
-            self.propertys_get.remove(property) if property in self.propertys_get else self.propertys_give.append(property)
+        property_give = self.player.check_owned_property()
+        property_get = self.targeted_player.check_owned_property()
+        if property_give != None :
+            self.propertys_give.remove(property_give) if property_give in self.propertys_give else self.propertys_give.append(property_give)
+        if property_get != None:
+            self.propertys_get.remove(property_get) if property_get in self.propertys_get else self.propertys_get.append(property_get)
+
+
+    def accept(self):
+        for property in self.propertys_give:
+            self.player.remove_property(property)
+            property.owned = self.targeted_player
+            self.targeted_player.add_property(property, self.surface)
+        for property in self.propertys_get:
+            self.targeted_player.remove_property(property)
+            property.owned = self.player
+            self.player.add_property(property, self.surface)
 
 
 
