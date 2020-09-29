@@ -63,17 +63,31 @@ while run:
 
                 if x == "ROLL DICE":
                     roll = dice_roll()
-                    pl_list[turn].move(roll[0]) #when the player clicks roll dice it gets the number and then using the property_action function determines what property has been landed on
-                    if roll[1] == True:
-                        triple_checker+=1
-                    action_taken = pl_list[turn].property_action(board)
-                    pl_list[turn].pass_go(roll[0])
+                    if not check_for_triple(triple_checker):
+                        pl_list[turn].move(roll[0]) #when the player clicks roll dice it gets the number and then using the property_action function determines what property has been landed on
+                        if roll[1] == True:
+                            double = True
+                        action_taken = pl_list[turn].property_action(board)
+                        pl_list[turn].pass_go(roll[0])
+                    else:
+                        pl_list[turn].to_jail()
+                        jail_list.append(pl_list[turn])
+                        turn +=1
+                        turn %= len(pl_list)
+                        triple_checker = 0
+                        other_card = None
+                        action_taken = 0
 
 
                 elif x == "END TURN":
-                    turn += 1
-                    turn %= len(pl_list)
+                    if double == True:
+                        triple_checker +=1
+                    else:
+                        turn += 1
+                        turn %= len(pl_list)
+                        triple_checker = 0
                     other_card = None
+                    double = False
                     action_taken = 0 #this will reset it and then let the next player have their turn
 
                 elif x == "MAKE DEAL":
@@ -183,6 +197,8 @@ while run:
 
         x,y = pygame.mouse.get_pos()
         render_text(board,font, pl_list[turn].username, COLOURS["BLACK"], (x,y))
+        render_text(board, font, str(triple_checker), COLOURS["RED"], (x, y+30))
+        render_text(board, font, str(double), COLOURS["RED"], (x-30, y+30))
 
 
 
@@ -194,6 +210,14 @@ while run:
         pygame.display.update()
         clock.tick(60)
 
+        pl = []
+        for sets in pl_list[0].owned_propertys:
+            new_list = []
+            for propertys in sets:
+                new_list.append(propertys.name)
+            pl.append(new_list)
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            print(pl)
 
 
 

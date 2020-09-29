@@ -62,7 +62,6 @@ class Player:
             self.money += 200
 
     def add_property(self, property, win):
-        print(property.name)
         added = False
         for set in self.owned_propertys:
             for p in set:
@@ -80,6 +79,9 @@ class Player:
             if property in set:
                 set.remove(property)
                 break
+        self.owned_propertys = [i for i in self.owned_propertys if i]
+
+
 
 
 
@@ -159,6 +161,9 @@ class Player:
         if current_property.mortgage:
             self.money -= current_property.purchase/2 + current_property.purchase/10
             current_property.mortgage = False
+
+    def to_jail(self):
+        self.pos = 10
 
 
 

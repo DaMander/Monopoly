@@ -52,3 +52,5 @@ def render_text(win, font, message, colour, co_ords):
     text_surf, text_rect = get_centre(font, message, colour)
     text_rect.center = co_ords
     win.blit(text_surf,text_rect)
+
+
