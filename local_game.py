@@ -12,7 +12,7 @@ win = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 clock = pygame.time.Clock()
 
 
-pl_list = [Player(0, 14, COLOURS["RED"] ,"Player 1"),Player(0, 14, COLOURS["DARK BLUE"], "Player 2")] #Player(0, 14, COLOURS["YELLOW"], "Player 3")]
+pl_list = [Player(0, 14, COLOURS["RED"] ,"Player 1"),Player(0, 14, COLOURS["DARK BLUE"], "Player 2"),Player(0, 14, COLOURS["YELLOW"], "Player 3")]
 
 board = Board(WINDOW_WIDTH, WINDOW_HEIGHT)#the Board is a class within board.py
 #using the board class it then sets up all the properties needing to be made
@@ -36,6 +36,15 @@ action_time = 0
 other_card = None
 board.sort_sets()
 
+deal_player = None
+per = 0
+
+def choose_deal_player(player_buttons, deal_player, current_player):
+    for i in range(len(player_buttons)):
+        if check_rect(player_buttons[i][0]):
+            deal_player = pl_list[player_buttons[i][1]] if pl_list[player_buttons[i][1]] != current_player else deal_player
+    return deal_player
+
 
 
 while run:
@@ -45,54 +54,70 @@ while run:
             run = False
 
 
+        per = time.time() if per == 0 else per
+        print(time.time() - per)
+
+
+
+
 
 
         win.fill((200, 200, 255))
-        board.draw_background(pl_list, turn)
+        player_buttons = board.draw_background(pl_list, turn)
+
         # board.draw is in the board class and goes through all the propertys, player squares and buttons that need to be drawn
         for i in pl_list:
             i.draw(board)
             #this draws the players to the board, circling through them
 
+        def reset_values():
+            return 0, None, False
+
 
         #this is to do with the movement of the player
         if event.type == pygame.MOUSEBUTTONDOWN:
+            deal_player = choose_deal_player(player_buttons, deal_player, pl_list[turn])
             x = board.check_for_button_click(action_taken)
             if x != None:
 
 
                 if x == "ROLL DICE":
                     roll = dice_roll()
-                    if not check_for_triple(triple_checker):
-                        pl_list[turn].move(roll[0]) #when the player clicks roll dice it gets the number and then using the property_action function determines what property has been landed on
-                        if roll[1] == True:
-                            double = True
-                        action_taken = pl_list[turn].property_action(board)
-                        pl_list[turn].pass_go(roll[0])
+                    if roll[1]:
+                        triple_checker +=1
+                        double = True
+                    if pl_list[turn] not in jail_list or double == True:
+                        if not check_for_triple(triple_checker):
+                            pl_list[turn].move(roll[0]) #when the player clicks roll dice it gets the number and then using the property_action function determines what property has been landed on
+                            action_taken = pl_list[turn].property_action(board)
+                            pl_list[turn].pass_go(roll[0])
+                        else:
+                            pl_list[turn].to_jail()
+                            jail_list.append(pl_list[turn])
+                            double = False
+                            action_taken = 1
                     else:
-                        pl_list[turn].to_jail()
-                        jail_list.append(pl_list[turn])
-                        turn +=1
-                        turn %= len(pl_list)
-                        triple_checker = 0
-                        other_card = None
-                        action_taken = 0
+                        action_taken = 1
+                        jail_list.remove(pl_list[turn])
+
 
 
                 elif x == "END TURN":
-                    if double == True:
-                        triple_checker +=1
-                    else:
+                    if double != True:
                         turn += 1
                         turn %= len(pl_list)
                         triple_checker = 0
                     other_card = None
                     double = False
+                    deal_player = None
                     action_taken = 0 #this will reset it and then let the next player have their turn
 
                 elif x == "MAKE DEAL":
-                    deal = Deal(pl_list[0], pl_list[1], board)
-                    action_taken = 3
+                    if deal_player != None:
+                        deal = Deal(pl_list[turn], deal_player, board)
+                        action_taken = 3
+                    else:
+                        board.no_deal_player()
 
                 elif x == "LOOK AT PROPERTYS":
                     action_taken = 11
@@ -138,9 +163,14 @@ while run:
                 elif x == "ACCEPT":
                     action_taken = 1
                     deal.accept()
+                    deal = None
 
+                elif x == "REJECT":
+                    action_taken = 1
+                    deal = None
 
-
+        if pl_list[turn].land_on_go_to_jail(board):
+            jail_list.append(pl_list[turn])
 
         if action_taken == 3 or action_taken == 4:
             deal.draw()
@@ -149,7 +179,9 @@ while run:
                     deal.add_propertys()
 
 
-        if action_taken == 6:
+
+
+        elif action_taken == 6:
             auction.draw()
             if auction.check_finished():
                 auction.players[0].buy_property(board, pl_list[turn], auction.amount)
@@ -210,14 +242,6 @@ while run:
         pygame.display.update()
         clock.tick(60)
 
-        pl = []
-        for sets in pl_list[0].owned_propertys:
-            new_list = []
-            for propertys in sets:
-                new_list.append(propertys.name)
-            pl.append(new_list)
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            print(pl)
 
 
 

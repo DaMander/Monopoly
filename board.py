@@ -50,16 +50,17 @@ class Board(pygame.Surface):   #this class creates the 40 instances of the locat
 
         self.buttons = [[Button("ROLL DICE", BOARD_WIDTH/2, WINDOW_HEIGHT/2, COLOURS["GREEN"], True)],
 
-                        [Button("END TURN", BOARD_WIDTH/2, WINDOW_HEIGHT/2, COLOURS["RED"], True),
-                         Button("MAKE DEAL", BOARD_WIDTH/2, 150 + WINDOW_HEIGHT/2, COLOURS["PINK"], True),
-                         Button("LOOK AT PROPERTYS", BOARD_WIDTH/2,  WINDOW_HEIGHT/2 -150, COLOURS["YELLOW"], True)],
+                        [
+                        Button("LOOK AT PROPERTYS", BOARD_WIDTH/2,  WINDOW_HEIGHT/2 -150, COLOURS["YELLOW"], True),
+                        Button("END TURN", BOARD_WIDTH/2, WINDOW_HEIGHT/2, COLOURS["RED"], True),
+                        Button("MAKE DEAL", BOARD_WIDTH/2, 150 + WINDOW_HEIGHT/2, COLOURS["PINK"], True)
+                        ],
 
                         [Button("PURCHASE", PROPERTY_HEIGHT + PROPERTY_WIDTH + 120, 9 * PROPERTY_WIDTH +10, COLOURS["GREEN"], True),
                          Button("AUCTION", PROPERTY_HEIGHT + PROPERTY_WIDTH + 270, 9 * PROPERTY_WIDTH +10, COLOURS["DARK BLUE"], True)],
 
 
-                        [Button("FINISHED", PROPERTY_HEIGHT, PROPERTY_HEIGHT+ 9*PROPERTY_WIDTH - BUTTON_HEIGHT, COLOURS["GREEN"],False, (BOARD_WIDTH - 2*PROPERTY_HEIGHT)/2),
-                         Button("BACK", PROPERTY_HEIGHT+(BOARD_WIDTH - 2*PROPERTY_HEIGHT)/2, PROPERTY_HEIGHT+ 9*PROPERTY_WIDTH -BUTTON_HEIGHT, COLOURS["RED"], False, (BOARD_WIDTH - 2*PROPERTY_HEIGHT)/2),
+                        [Button("FINISHED", PROPERTY_HEIGHT + 9/2 *PROPERTY_WIDTH, PROPERTY_HEIGHT+ 9*PROPERTY_WIDTH - 1/2*BUTTON_HEIGHT, COLOURS["GREEN"], True)
                          ],
 
                         [Button("ACCEPT", PROPERTY_HEIGHT, PROPERTY_HEIGHT+ 9*PROPERTY_WIDTH - BUTTON_HEIGHT, COLOURS["GREEN"],False, (BOARD_WIDTH - 2*PROPERTY_HEIGHT)/3),
@@ -71,15 +72,21 @@ class Board(pygame.Surface):   #this class creates the 40 instances of the locat
                          Button("- HOUSE", PROPERTY_HEIGHT + PROPERTY_WIDTH +10, PROPERTY_HEIGHT + 7*PROPERTY_WIDTH +50, COLOURS["RED"], False, PROPERTY_ENLARGE_WIDTH/2, 50),
                          Button("MORTGAGE", PROPERTY_HEIGHT + PROPERTY_WIDTH +PROPERTY_ENLARGE_WIDTH/2 +10, PROPERTY_HEIGHT + 7*PROPERTY_WIDTH, COLOURS["GREEN"], False, PROPERTY_ENLARGE_WIDTH/2, 50),
                          Button("UNMORTGAGE", PROPERTY_HEIGHT + PROPERTY_WIDTH +10 + PROPERTY_ENLARGE_WIDTH/2, PROPERTY_HEIGHT + 7*PROPERTY_WIDTH +50, COLOURS["RED"], False, PROPERTY_ENLARGE_WIDTH/2, 50),
-                         Button("BACK", PROPERTY_HEIGHT+ PROPERTY_WIDTH + 10, PROPERTY_HEIGHT, COLOURS["RED"], False, PROPERTY_HEIGHT, PROPERTY_WIDTH/2)],#player property actions - mortgage, buy houses etc.
+                         ],#player property actions - mortgage, buy houses etc.
 
                         [Button("BID 100", PROPERTY_HEIGHT +10, PROPERTY_HEIGHT+ 7*PROPERTY_WIDTH, COLOURS["RED"],False, PROPERTY_ENLARGE_WIDTH/3),
                          Button("BID 10", PROPERTY_HEIGHT+10+PROPERTY_ENLARGE_WIDTH/3, PROPERTY_HEIGHT+ 7*PROPERTY_WIDTH, COLOURS["ORANGE"], False, PROPERTY_ENLARGE_WIDTH/3),
                          Button("BID 1", PROPERTY_HEIGHT +10 +2*PROPERTY_ENLARGE_WIDTH/3, PROPERTY_HEIGHT+ 7*PROPERTY_WIDTH, COLOURS["PINK"], False, PROPERTY_ENLARGE_WIDTH/3),#auction
-                         Button("LEAVE", PROPERTY_HEIGHT+ PROPERTY_WIDTH + 10, PROPERTY_HEIGHT, COLOURS["RED"], False, 2*PROPERTY_HEIGHT, PROPERTY_WIDTH/2)]
+                         Button("LEAVE", PROPERTY_HEIGHT+ PROPERTY_WIDTH + 10, PROPERTY_HEIGHT, COLOURS["RED"], False, 2*PROPERTY_HEIGHT, PROPERTY_WIDTH/2)],
                         ]
 
-        self.always_button = Button("BANK", WINDOW_WIDTH-150,0,COLOURS["RED"], False) #this button will be used for the player to delcare bankruptcy
+        self.occuring_button = Button("BANK", WINDOW_WIDTH - 150, 0, COLOURS["RED"], False), Button("BACK", PROPERTY_HEIGHT + 9/2 *PROPERTY_WIDTH, PROPERTY_HEIGHT+1/4*PROPERTY_WIDTH, COLOURS["RED"], True, PROPERTY_HEIGHT, PROPERTY_WIDTH/2)
+
+
+
+
+
+
 
     def sort_sets(self):
         for p in self.properties:
@@ -94,14 +101,16 @@ class Board(pygame.Surface):   #this class creates the 40 instances of the locat
         self.fill((200, 200, 255))
         for p in self.properties:
             p.draw_propertys(self) #this goes through all the propertys and draws them to the board
+        player_buttons = []
         for i in range(len(list_of_players)):
-            list_of_players[i].draw_player_square(self, BOARD_WIDTH, i, WINDOW_WIDTH-BOARD_WIDTH, WINDOW_HEIGHT/len(list_of_players),turn) #this will draw the rectangles on the right which store player info
-
+            player_buttons.append(list_of_players[i].draw_player_square(self, BOARD_WIDTH, i, WINDOW_WIDTH-BOARD_WIDTH, WINDOW_HEIGHT/len(list_of_players),turn)) #this will draw the rectangles on the right which store player info
+        return player_buttons
 
     def draw_onto_board(self,player_pos, action_taken, other_card):
         self.draw_action(action_taken, player_pos, other_card) #this will draw graphics on the screen depending on what happens
-
-        self.always_button.draw(self) #this will draw buttons that are always on the screen
+        self.occuring_button[0].draw(self)
+        if action_taken == 3 or action_taken == 11:
+            self.occuring_button[1].draw(self)
 
         if action_taken <7: #this draws the buttons to the screen depending on what happens
             for b in self.buttons[action_taken]:
@@ -144,11 +153,16 @@ class Board(pygame.Surface):   #this class creates the 40 instances of the locat
                 elif p.height != p.width :
                     p.enlarge_card(self)
 
-    def check_for_button_click(self, which_buttons):
-        if which_buttons < 7:
-            for b in self.buttons[which_buttons]:
+    def check_for_button_click(self, action_taken):
+        if action_taken < 7:
+            for b in self.buttons[action_taken]:
                 if b.check_for_press():
+                    print(b.text)
                     return b.text
+        if action_taken == 3 or action_taken == 11:
+            if self.occuring_button[1].check_for_press():
+                print(self.occuring_button[1].text)
+                return self.occuring_button[1].text
 
 
     def utility_station_rent(self, colour):
@@ -161,6 +175,9 @@ class Board(pygame.Surface):   #this class creates the 40 instances of the locat
                 for p in self.sorted_sets[colour]:
                     if p.owned == counts[i][0]:
                         p.amount_houses = counts[i][1] -1
+
+    def no_deal_player(self):
+        pygame.draw.rect(self, COLOURS["BLACK"], (PROPERTY_HEIGHT, 150 + WINDOW_HEIGHT/2, BOARD_WIDTH, PROPERTY_WIDTH))
 
 
 
@@ -269,6 +286,8 @@ class Property(pygame.Surface): #this class is used when drawing the squares to 
                     render_text(win, font,
                                 f'If {str(i + 1)} "utility" is owned rent is {self.rent[str(i)]} times amount shown on dice',
                                 COLOURS["BLACK"], (x, y + 4 * PROPERTY_WIDTH + i * PROPERTY_WIDTH / 2))
+
+
 
     def enlarge_card(self, win):
         pygame.draw.rect(win, COLOURS["WHITE"], (PROPERTY_HEIGHT, PROPERTY_HEIGHT + PROPERTY_WIDTH, 9*PROPERTY_WIDTH, 7*PROPERTY_WIDTH))

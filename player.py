@@ -45,6 +45,11 @@ class Player:
                 pygame.draw.rect(win, p.colour, (pygame.Rect(squ).midleft[0] + set_dist *25, pygame.Rect(squ).midleft[1] + prop_dist* 25, 20, 20))
                 pygame.draw.rect(win, COLOURS["BLACK"], (pygame.Rect(squ).midleft[0] + set_dist*25, pygame.Rect(squ).midleft[1] + prop_dist*25, 20, 20),1)
                 prop_dist +=1
+        return squ, variable
+
+    def check_rect(self, rect):
+        x,y = pygame.mouse.get_pos()
+        return pygame.Rect(rect).collidepoint(x,y)
 
     def property_action(self, win):
         action = win.properties[self.pos].property_actions(self)
@@ -165,6 +170,15 @@ class Player:
     def to_jail(self):
         self.pos = 10
 
+    def land_on_go_to_jail(self, win):
+        if win.properties[self.pos].name == "GO TO JAIL":
+            self.to_jail()
+            return True
+
+def check_rect(rect):
+    x,y = pygame.mouse.get_pos()
+    return pygame.Rect(rect).collidepoint(x,y)
+
 
 
 
@@ -234,7 +248,7 @@ class Deal:
             render_text(self.surface, font, self.propertys_give[i].name, self.propertys_give[i].colour, ((x + PROPERTY_HEIGHT)/2, y +50 +i*30))
         for i in range(len(self.propertys_get)):
             render_text(self.surface, font, self.propertys_get[i].name, self.propertys_get[i].colour, (x + (x-PROPERTY_HEIGHT)/2, y +50 + i*30) )
-
+        pygame.draw.rect(self.surface, COLOURS["BLACK"], ((x + PROPERTY_HEIGHT)/2, y + 300,50,50))
 
 
 
@@ -257,6 +271,10 @@ class Deal:
             self.targeted_player.remove_property(property)
             property.owned = self.player
             self.player.add_property(property, self.surface)
+
+
+
+
 
 
 
