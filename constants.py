@@ -28,6 +28,9 @@ PROPERTY_ENLARGE_HEIGHT = 9 * PROPERTY_WIDTH - (2 * 1/6*PROPERTY_WIDTH)
 BUTTON_WIDTH = WINDOW_WIDTH*15/128
 BUTTON_HEIGHT = WINDOW_WIDTH*5/64
 
+#fixed variables, stay the same each start of game
+have_enough_money = True
+
 
 #property figures
 number_of_properties = 40
@@ -35,7 +38,7 @@ number_of_properties = 40
 
 
 #player figures
-starting_money = 1500
+starting_money = 300
 free_parking_cash = 0
 
 

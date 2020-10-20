@@ -33,6 +33,8 @@ double = False
 action_time = 0
 #this will be used for timers or delays
 
+
+
 other_card = None
 board.sort_sets()
 
@@ -54,8 +56,7 @@ while run:
             run = False
 
 
-        per = time.time() if per == 0 else per
-        print(time.time() - per)
+
 
 
 
@@ -102,7 +103,7 @@ while run:
 
 
 
-                elif x == "END TURN":
+                elif x == "END TURN" and have_enough_money == True:
                     if double != True:
                         turn += 1
                         turn %= len(pl_list)
@@ -117,7 +118,7 @@ while run:
                         deal = Deal(pl_list[turn], deal_player, board)
                         action_taken = 3
                     else:
-                        board.no_deal_player()
+                        print("select a player")
 
                 elif x == "LOOK AT PROPERTYS":
                     action_taken = 11
@@ -192,9 +193,9 @@ while run:
             action_time = time.time() if action_time == 0 else action_time
             if time.time() - action_time >= 3:
                 if action_taken == 7:
-                    pl_list[turn].pay_rent(board)
+                    have_enough_money = pl_list[turn].pay_rent(board)
                 elif action_taken == 8:
-                    pl_list[turn].pay_tax(board)
+                    have_enough_money = pl_list[turn].pay_tax(board)
                 action_taken = 1
                 action_time = 0
 
@@ -214,10 +215,12 @@ while run:
         #if list(BROWN) == board.properties[pl_list[turn].pos].colour:
          #   print("skrrr skrrr")
 
+        if have_enough_money == False and action_taken == 1:
+            action_taken = pl_list[turn].property_action(board)
 
 
-
-
+        if have_enough_money == False:
+            print("do not have enough money")
 
 
             #this will ensure it cycles through all the players in the game if theres 2 players then it'll go 0,1,0,1...

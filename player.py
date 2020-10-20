@@ -134,12 +134,18 @@ class Player:
                 self.money -= rent
                 space.owned.money += rent
                 return True
+            else:
+                return False
             #create function that will identify utility card and then x by dice roll
 
     def pay_tax(self, win):
         space = win.properties[self.pos]
-        rent = space.rent
-        self.money -= rent
+        if self.check_they_can_pay(space.rent):
+            rent = space.rent
+            self.money -= rent
+            return True
+        else:
+            return False
 
     def add_house(self, win, pos):
         current_property = win.properties[pos]

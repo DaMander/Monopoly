@@ -157,11 +157,9 @@ class Board(pygame.Surface):   #this class creates the 40 instances of the locat
         if action_taken < 7:
             for b in self.buttons[action_taken]:
                 if b.check_for_press():
-                    print(b.text)
                     return b.text
         if action_taken == 3 or action_taken == 11:
             if self.occuring_button[1].check_for_press():
-                print(self.occuring_button[1].text)
                 return self.occuring_button[1].text
 
 
@@ -176,8 +174,6 @@ class Board(pygame.Surface):   #this class creates the 40 instances of the locat
                     if p.owned == counts[i][0]:
                         p.amount_houses = counts[i][1] -1
 
-    def no_deal_player(self):
-        pygame.draw.rect(self, COLOURS["BLACK"], (PROPERTY_HEIGHT, 150 + WINDOW_HEIGHT/2, BOARD_WIDTH, PROPERTY_WIDTH))
 
 
 
