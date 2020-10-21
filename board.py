@@ -156,6 +156,8 @@ class Board(pygame.Surface):   #this class creates the 40 instances of the locat
         if action_taken == 3 or action_taken == 5 or action_taken == 11:
             if self.occuring_button[1].check_for_press():
                 return self.occuring_button[1].text
+        if self.occuring_button[0].check_for_press():
+            return self.occuring_button[0].text
 
 
 

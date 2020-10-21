@@ -73,7 +73,9 @@ class Player:
                 if p.colour == property.colour:
                     set.append(property)
                     added = True
-                    property.full_set = self.check_for_full_set(win, len(set))
+                    if self.check_for_full_set(win, len(set)):
+                        for prop_full_set in set:
+                            prop_full_set.full_set = True
                     break  # this will check through the propertys owned and if the colour is the same then it will append it into the list otherwise it'll just add it
         if added == False:
             self.owned_propertys.append([property])
@@ -96,7 +98,6 @@ class Player:
 
     def check_for_full_set(self, win, set_length):
         if len(win.sorted_sets[list(COLOURS.keys())[list(COLOURS.values()).index(win.properties[self.pos].colour)]]) == set_length:
-
             return True
         else:
             return False
@@ -152,7 +153,7 @@ class Player:
 
     def add_house(self, win, pos):
         current_property = win.properties[pos]
-        if current_property.full_set:
+        if current_property.full_set and not current_property.mortgage:
             if current_property.amount_houses < 5:
                 self.money -= current_property.houses_price
                 current_property.amount_houses += 1
@@ -166,7 +167,7 @@ class Player:
 
     def mortgage(self, win, pos):
         current_property = win.properties[pos]
-        if current_property.mortgage == False:
+        if not current_property.mortgage and current_property.amount_houses == 0:
             self.money += current_property.purchase/2
             current_property.mortgage = True
 

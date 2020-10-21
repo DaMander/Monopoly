@@ -12,7 +12,7 @@ win = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 clock = pygame.time.Clock()
 
 
-pl_list = [Player(0, 14, COLOURS["RED"] ,"Player 1"),Player(0, 14, COLOURS["DARK BLUE"], "Player 2"),Player(0, 14, COLOURS["YELLOW"], "Player 3")]
+pl_list = [Player(0, 14, COLOURS["RED"] ,"Player 1"),Player(0, 14, COLOURS["DARK BLUE"], "Player 2")] #,Player(0, 14, COLOURS["YELLOW"], "Player 3")]
 
 board = Board(WINDOW_WIDTH, WINDOW_HEIGHT)#the Board is a class within board.py
 #using the board class it then sets up all the properties needing to be made
@@ -39,11 +39,11 @@ board.sort_sets()
 deal_player = None
 per = 0
 
-for i in board.properties:
+"""for i in board.properties:
     try:
-        i.rent["0"] *= 100
+        i.rent["0"] *= 10
     except:
-        TypeError
+        TypeError"""
 
 def choose_deal_player(player_buttons, deal_player, current_player):
     for i in range(len(player_buttons)):
@@ -73,9 +73,6 @@ while run:
         for i in pl_list:
             i.draw(board)
             #this draws the players to the board, circling through them
-
-        def reset_values():
-            return 0, None, False
 
 
         #this is to do with the movement of the player
@@ -149,6 +146,7 @@ while run:
                         action_taken = 11
                     else:
                         action_taken = 1
+                        other_card = None
 
                 elif x == "+ HOUSE":
                     pl_list[turn].add_house(board, other_card)
@@ -176,6 +174,12 @@ while run:
                 elif x == "REJECT":
                     action_taken = 1
                     deal = None
+
+                elif x == "BANK":
+                    #function that takes in have_enough_money variable to decide whether another player takes there propertys else it goes to the bank and free parking
+                    remove_assets(have_enough_money)
+                    pl_list.remove(pl_list[turn])
+
 
         if pl_list[turn].land_on_go_to_jail(board):
             jail_list.append(pl_list[turn])
@@ -222,7 +226,7 @@ while run:
         #if list(BROWN) == board.properties[pl_list[turn].pos].colour:
          #   print("skrrr skrrr")
 
-        if have_enough_money == False and action_taken == 1:
+        if pl_list[turn].money - amount_required >=0 and action_taken == 1 and have_enough_money == False:
             action_taken = pl_list[turn].property_action(board)
         if have_enough_money == False:
             print("do not have enough money")
