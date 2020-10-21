@@ -33,13 +33,17 @@ double = False
 action_time = 0
 #this will be used for timers or delays
 
-
-
 other_card = None
 board.sort_sets()
 
 deal_player = None
 per = 0
+
+for i in board.properties:
+    try:
+        i.rent["0"] *= 100
+    except:
+        TypeError
 
 def choose_deal_player(player_buttons, deal_player, current_player):
     for i in range(len(player_buttons)):
@@ -54,7 +58,6 @@ while run:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
-
 
 
 
@@ -119,6 +122,7 @@ while run:
                         action_taken = 3
                     else:
                         print("select a player")
+                        #board.no_deal_player()
 
                 elif x == "LOOK AT PROPERTYS":
                     action_taken = 11
@@ -141,7 +145,10 @@ while run:
                     auction.add_amount(100)
 
                 elif x == "BACK":
-                    action_taken = 1
+                    if action_taken == 5:
+                        action_taken = 11
+                    else:
+                        action_taken = 1
 
                 elif x == "+ HOUSE":
                     pl_list[turn].add_house(board, other_card)
@@ -193,9 +200,9 @@ while run:
             action_time = time.time() if action_time == 0 else action_time
             if time.time() - action_time >= 3:
                 if action_taken == 7:
-                    have_enough_money = pl_list[turn].pay_rent(board)
+                    have_enough_money, amount_required = pl_list[turn].pay_rent(board)
                 elif action_taken == 8:
-                    have_enough_money = pl_list[turn].pay_tax(board)
+                    have_enough_money, amount_required = pl_list[turn].pay_tax(board)
                 action_taken = 1
                 action_time = 0
 
@@ -217,10 +224,13 @@ while run:
 
         if have_enough_money == False and action_taken == 1:
             action_taken = pl_list[turn].property_action(board)
-
-
         if have_enough_money == False:
             print("do not have enough money")
+
+
+
+
+
 
 
             #this will ensure it cycles through all the players in the game if theres 2 players then it'll go 0,1,0,1...

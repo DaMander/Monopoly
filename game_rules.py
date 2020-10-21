@@ -16,7 +16,3 @@ def check_for_triple(triple_checker):
 def jail(jail_list, player, double):
     if player in jail_list:
         return double
-
-
-
-

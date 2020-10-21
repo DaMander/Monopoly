@@ -18,7 +18,7 @@ class Player:
         #add list which uses the thing to add propertys to create the list with every set
 
     def check_they_can_pay(self, figure):
-        if self.money - figure > 0:
+        if self.money - figure >= 0:
             return True
         else:
             return False
@@ -121,6 +121,8 @@ class Player:
             self.add_property(space,win)
             space.owned = self
             return True
+        else:
+            print("insufficient funds") #needs to be function where they can use 'make deals' and 'look at propertys' to gain the cash they need, so it goes to sction taken 1 but they can't click end turn, could have back button when there finished which then executes payment
 
     def pay_rent(self, win):
         #this will be used to player who owns the property that the current player has landed on and tax that the player lands on
@@ -133,19 +135,20 @@ class Player:
             if self.check_they_can_pay(rent):
                 self.money -= rent
                 space.owned.money += rent
-                return True
+                return True, 0
             else:
-                return False
+                return False, rent
             #create function that will identify utility card and then x by dice roll
 
     def pay_tax(self, win):
         space = win.properties[self.pos]
-        if self.check_they_can_pay(space.rent):
+        rent = space.rent
+        if self.check_they_can_pay(rent):
             rent = space.rent
             self.money -= rent
-            return True
+            return True, 0
         else:
-            return False
+            return False, rent
 
     def add_house(self, win, pos):
         current_property = win.properties[pos]
@@ -219,10 +222,11 @@ class Auction:
         render_text(self.surface, font, self.players[self.turn].username, COLOURS["GREEN"], (WINDOW_WIDTH/2, WINDOW_HEIGHT/2))
 
     def add_amount(self, amount):
-        self.amount += amount
-        self.amounts = [self.amount] + self.amounts
-        self.turn += 1
-        self.turn %= len(self.players)
+        if self.players[self.turn].money >= (self.amount + amount):
+            self.amount += amount
+            self.amounts = [self.amount] + self.amounts
+            self.turn += 1
+            self.turn %= len(self.players)
 
     def leave(self):
         self.players.pop(self.turn)
@@ -254,7 +258,6 @@ class Deal:
             render_text(self.surface, font, self.propertys_give[i].name, self.propertys_give[i].colour, ((x + PROPERTY_HEIGHT)/2, y +50 +i*30))
         for i in range(len(self.propertys_get)):
             render_text(self.surface, font, self.propertys_get[i].name, self.propertys_get[i].colour, (x + (x-PROPERTY_HEIGHT)/2, y +50 + i*30) )
-        pygame.draw.rect(self.surface, COLOURS["BLACK"], ((x + PROPERTY_HEIGHT)/2, y + 300,50,50))
 
 
 
@@ -278,14 +281,5 @@ class Deal:
             property.owned = self.player
             self.player.add_property(property, self.surface)
 
-
-
-
-
-
-
-
-
-
-
+            
 

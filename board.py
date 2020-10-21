@@ -1,9 +1,6 @@
-import random
-
 import pygame
 import json
 from constants import *
-from community_chest_and_chance import *
 pygame.init()
 
 
@@ -43,8 +40,6 @@ class Board(pygame.Surface):   #this class creates the 40 instances of the locat
         self.properties.append(Property("corner", BOARD_WIDTH-PROPERTY_HEIGHT, 0, *file[str(len(self.properties))].values()))
         for i in range(9):
             self.properties.append(Property("hori", BOARD_WIDTH-PROPERTY_HEIGHT, PROPERTY_HEIGHT + (i * PROPERTY_WIDTH), *file[str(len(self.properties))].values()))
-        for i in range(len(comm_cards)):
-            self.cards.append(Card(*comm_cards[str(len(self.cards))].values()))
 
 
 
@@ -109,7 +104,7 @@ class Board(pygame.Surface):   #this class creates the 40 instances of the locat
     def draw_onto_board(self,player_pos, action_taken, other_card):
         self.draw_action(action_taken, player_pos, other_card) #this will draw graphics on the screen depending on what happens
         self.occuring_button[0].draw(self)
-        if action_taken == 3 or action_taken == 11:
+        if action_taken == 3 or action_taken == 5 or action_taken ==11:
             self.occuring_button[1].draw(self)
 
         if action_taken <7: #this draws the buttons to the screen depending on what happens
@@ -158,9 +153,10 @@ class Board(pygame.Surface):   #this class creates the 40 instances of the locat
             for b in self.buttons[action_taken]:
                 if b.check_for_press():
                     return b.text
-        if action_taken == 3 or action_taken == 11:
+        if action_taken == 3 or action_taken == 5 or action_taken == 11:
             if self.occuring_button[1].check_for_press():
                 return self.occuring_button[1].text
+
 
 
     def utility_station_rent(self, colour):
@@ -174,6 +170,8 @@ class Board(pygame.Surface):   #this class creates the 40 instances of the locat
                     if p.owned == counts[i][0]:
                         p.amount_houses = counts[i][1] -1
 
+    def no_deal_player(self):
+        pygame.draw.rect(self, COLOURS["BLACK"], (PROPERTY_HEIGHT, 150 + WINDOW_HEIGHT/2, BOARD_WIDTH, PROPERTY_WIDTH))
 
 
 
@@ -216,8 +214,9 @@ class Property(pygame.Surface): #this class is used when drawing the squares to 
             if self.amount_houses > 4:
                     pygame.draw.rect(win, COLOURS["RED"], (self.x+ 20, self.y +40, 10, 10))
             else:
-                for i in range(self.amount_houses):
-                    pygame.draw.rect(win, COLOURS["GREEN"], (i*15 + self.x, self.y +40, 10, 10))
+                render_text(win, font, str(self.amount_houses), COLOURS["GREEN"], (40 + self.x, self.y +40))
+               # for i in range(self.amount_houses):
+                  #  pygame.draw.rect(win, COLOURS["GREEN"], (i*15 + self.x, self.y +40, 10, 10))
         if self.mortgage:
             pygame.draw.line(win, COLOURS["RED"], (self.x, self.y), (self.x + self.width, self.y + self.height))
     """create a function which manages the text so it fits within the property space"""
@@ -326,7 +325,3 @@ class Button:
 with open("property_information.json") as f:
     file = json.load(f)
     f.close()
-
-
-
-

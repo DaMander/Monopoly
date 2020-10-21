@@ -30,6 +30,7 @@ BUTTON_HEIGHT = WINDOW_WIDTH*5/64
 
 #fixed variables, stay the same each start of game
 have_enough_money = True
+amount_required = 0
 
 
 #property figures
@@ -38,7 +39,7 @@ number_of_properties = 40
 
 
 #player figures
-starting_money = 300
+starting_money = 1500
 free_parking_cash = 0
 
 
@@ -55,5 +56,3 @@ def render_text(win, font, message, colour, co_ords):
     text_surf, text_rect = get_centre(font, message, colour)
     text_rect.center = co_ords
     win.blit(text_surf,text_rect)
-
-
