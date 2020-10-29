@@ -153,7 +153,7 @@ class Player:
 
     def add_house(self, win, pos):
         current_property = win.properties[pos]
-        if current_property.full_set and not current_property.mortgage:
+        if current_property.full_set and not current_property.mortgage and self.money - current_property.houses_price >=0:
             if current_property.amount_houses < 5:
                 self.money -= current_property.houses_price
                 current_property.amount_houses += 1
@@ -167,7 +167,7 @@ class Player:
 
     def mortgage(self, win, pos):
         current_property = win.properties[pos]
-        if not current_property.mortgage and current_property.amount_houses == 0:
+        if not current_property.mortgage and (current_property.amount_houses == 0 or current_property.houses_price == None):
             self.money += current_property.purchase/2
             current_property.mortgage = True
 
@@ -184,6 +184,20 @@ class Player:
         if win.properties[self.pos].name == "GO TO JAIL":
             self.to_jail()
             return True
+
+    def remove_assets(self, win, have_enough_money):
+        if have_enough_money:
+            eliminator = None
+        else:
+            eliminator = win.properties[self.pos].owned
+            eliminator.money += self.money
+        for sets in self.owned_propertys:
+            for property in sets:
+                self.remove_property(property)
+                property.owned = eliminator
+                if eliminator != None:
+                    eliminator.add_property(property, win)
+
 
 def check_rect(rect):
     x,y = pygame.mouse.get_pos()
@@ -282,5 +296,5 @@ class Deal:
             property.owned = self.player
             self.player.add_property(property, self.surface)
 
-            
+
 
