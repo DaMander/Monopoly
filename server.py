@@ -1,3 +1,5 @@
+import time
+
 from constants import  *
 from _thread import *
 from board import Board
@@ -35,7 +37,7 @@ board = Board(WINDOW_WIDTH, WINDOW_HEIGHT)
 
 def threaded_client(conn, _id):
 
-    global players, connections, start, action_taken, triple_checker, jail_list, double, turn, have_enough_money, other_card
+    global players, connections, start, action_taken, triple_checker, jail_list, double, turn, have_enough_money, other_card, action_time,amount_required
 
     player_id = _id
 
@@ -149,8 +151,24 @@ def threaded_client(conn, _id):
                 pl_dict[i] = list(players[i].return_variables())
                 pl_dict[i][-1] = pl_index
 
+            if action_taken == 7 or action_taken == 8 or action_taken == 9:
+                action_time = time.time() if action_time == 0 else action_time
+                if time.time() - action_time >= 1.5:
+                    if action_taken == 7:
+                        have_enough_money, amount_required = pl_list[turn].pay_rent(board)
+                    elif action_taken == 8:
+                        have_enough_money, amount_required = pl_list[turn].pay_tax(board)
+                    action_taken = 1
+                    action_time = 0
 
+            if pl_list[turn].land_on_go_to_jail(board):
+                jail_list.append(pl_list[turn])
 
+            board.utility_station_rent("BLACK")
+            board.utility_station_rent("BOARD COLOUR")
+
+            if pl_list[turn].money - amount_required >= 0 and action_taken == 1 and have_enough_money == False:
+                action_taken = pl_list[turn].property_action(board)
 
 
 
@@ -171,7 +189,8 @@ def threaded_client(conn, _id):
 
     connections -= 1
     del players[player_id]
-    turn %= len(players)
+    if len(players) > 0:
+        turn %= len(players)
     conn.close()
 
 print("Waiting for connections")

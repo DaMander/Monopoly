@@ -183,7 +183,15 @@ class Board(pygame.Surface):   #this class creates the 40 instances of the locat
             prop_list.append([prop.mortgage, prop_index, prop.amount_houses, prop.full_set])
         return prop_list
 
-    def convert_for_use(self, ):
+    def convert_for_use(self, send_board, pl_list):
+        for prop_num in range(len(send_board)):
+            self.properties[prop_num].mortgage = send_board[prop_num][0]
+            self.properties[prop_num].owned = pl_list[send_board[prop_num][1]] if send_board[prop_num][1] != None else None
+            self.properties[prop_num].amount_houses = send_board[prop_num][2]
+            self.properties[prop_num].full_set = send_board[prop_num][3]
+
+
+
 
 
 

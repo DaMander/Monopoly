@@ -8,15 +8,7 @@ import time
 """as it is i it can only do it when the numbers go up in the dictionary instead it needs to through the dictionarys as they come"""
 
 def redraw_window(action_taken,player_dict, turn, other_card,deal, auction):
-    pl_list = []
-    k = 0
-    for i in list(player_dict):
-        pl_list.append(Player(*player_dict[i]))
-        property_index = pl_list[k].owned_propertys
-        pl_list[k].owned_propertys = []
-        for ind in property_index:
-            pl_list[k].add_property(board.properties[ind], board)
-        k+=1
+
 
     board.fill((200,200,255))
 
@@ -81,10 +73,20 @@ while run:
 
     send_board, action_taken, players, turn, other_card,deal, auction = server.send(data)
 
-    print(send_board)
+    pl_list = []
+    k = 0
+    for i in list(players):
+        pl_list.append(Player(*players[i]))
+        property_index = pl_list[k].owned_propertys
+        pl_list[k].owned_propertys = []
+        for ind in property_index:
+            pl_list[k].add_property(board.properties[ind], board)
+        k += 1
+
+    board.convert_for_use(send_board, pl_list)
 
 
-    redraw_window(action_taken, players, turn, other_card, deal, auction)
+    redraw_window(action_taken, pl_list, turn, other_card, deal, auction)
     pygame.display.update()
 
 server.disconnect()
