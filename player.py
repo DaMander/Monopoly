@@ -1,4 +1,3 @@
-import pygame
 from constants import *
 pygame.font.init()
 font = pygame.font.SysFont('arial', 26)
@@ -8,13 +7,13 @@ font = pygame.font.SysFont('arial', 26)
 
 
 class Player:
-    def __init__(self, pos, radius, colour, username):
+    def __init__(self, pos, radius, colour, money, username, propertys):
         self.pos = pos
         self.radius = radius
         self.colour = colour
-        self.money = starting_money
+        self.money = money
         self.username = username
-        self.owned_propertys = []
+        self.owned_propertys = propertys
         #add list which uses the thing to add propertys to create the list with every set
 
     def check_they_can_pay(self, figure):
@@ -45,7 +44,6 @@ class Player:
                 pygame.draw.rect(win, p.colour, (pygame.Rect(squ).midleft[0] + set_dist *25, pygame.Rect(squ).midleft[1] + prop_dist* 25, 20, 20))
                 pygame.draw.rect(win, COLOURS["BLACK"], (pygame.Rect(squ).midleft[0] + set_dist*25, pygame.Rect(squ).midleft[1] + prop_dist*25, 20, 20),1)
                 prop_dist +=1
-        return squ, variable
 
     def check_rect(self, rect):
         x,y = pygame.mouse.get_pos()
@@ -59,12 +57,12 @@ class Player:
     def move(self, amount):
         if self.pos + amount > 39:
             self.pos = (self.pos + amount) - 40
+            self.pass_go()
         else:
             self.pos += amount
 
-    def pass_go(self, roll_no):
-        if self.pos - roll_no < 0:
-            self.money += 200
+    def pass_go(self):
+        self.money += 200
 
     def add_property(self, property, win):
         added = False
@@ -89,11 +87,6 @@ class Player:
         self.owned_propertys = [i for i in self.owned_propertys if i]
 
 
-
-
-
-    def find_position(self, win, elem):
-        return win.properties.index(elem[0])
 
 
     def check_for_full_set(self, win, set_length):
@@ -167,7 +160,7 @@ class Player:
 
     def mortgage(self, win, pos):
         current_property = win.properties[pos]
-        if not current_property.mortgage and (current_property.amount_houses == 0 or current_property.houses_price == None):
+        if not current_property.mortgage and (current_property.amount_houses == 0 or current_property.houses_price == None):#if it has no houses then it can be mortgage and if it has no house price it means it's a station or utility
             self.money += current_property.purchase/2
             current_property.mortgage = True
 
@@ -190,6 +183,7 @@ class Player:
             eliminator = None
         else:
             eliminator = win.properties[self.pos].owned
+        if eliminator !=None:
             eliminator.money += self.money
         for sets in self.owned_propertys:
             for property in sets:
@@ -197,6 +191,9 @@ class Player:
                 property.owned = eliminator
                 if eliminator != None:
                     eliminator.add_property(property, win)
+
+    def return_variables(self):
+        return self.pos,self.radius,self.colour, self.money, self.username, self.owned_propertys
 
 
 def check_rect(rect):
@@ -234,7 +231,7 @@ class Auction:
                 render_text(self.surface, font, str(self.amounts[i]),COLOURS["BLACK"], (x,y))
                 pygame.draw.rect(self.surface, self.players[(self.turn + i) % len(self.players)].colour, amount_boxes,
                                  1)
-        render_text(self.surface, font, self.players[self.turn].username, COLOURS["GREEN"], (WINDOW_WIDTH/2, WINDOW_HEIGHT/2))
+        render_text(self.surface, font, self.players[self.turn].username, COLOURS["GREEN"], (WINDOW_WIDTH/4, WINDOW_HEIGHT/2 +20))
 
     def add_amount(self, amount):
         if self.players[self.turn].money >= (self.amount + amount):

@@ -1,4 +1,3 @@
-import pygame
 import json
 from constants import *
 pygame.init()
@@ -10,7 +9,7 @@ pygame.init()
 class Board(pygame.Surface):   #this class creates the 40 instances of the location class needed fot the 40 propertys in monopoly
     def __init__(self, width, height):
         super().__init__((width, height))
-        self.cards = []
+        #self.cards = []
         self.properties = []
         self.sorted_sets = {
             "BROWN": [],
@@ -46,7 +45,7 @@ class Board(pygame.Surface):   #this class creates the 40 instances of the locat
         self.buttons = [[Button("ROLL DICE", BOARD_WIDTH/2, WINDOW_HEIGHT/2, COLOURS["GREEN"], True)],
 
                         [
-                        Button("LOOK AT PROPERTYS", BOARD_WIDTH/2,  WINDOW_HEIGHT/2 -150, COLOURS["YELLOW"], True),
+                        Button("LOOK AT PROPERTIES", BOARD_WIDTH/2,  WINDOW_HEIGHT/2 -150, COLOURS["YELLOW"], True),
                         Button("END TURN", BOARD_WIDTH/2, WINDOW_HEIGHT/2, COLOURS["RED"], True),
                         Button("MAKE DEAL", BOARD_WIDTH/2, 150 + WINDOW_HEIGHT/2, COLOURS["PINK"], True)
                         ],
@@ -59,7 +58,7 @@ class Board(pygame.Surface):   #this class creates the 40 instances of the locat
                          ],
 
                         [Button("ACCEPT", PROPERTY_HEIGHT, PROPERTY_HEIGHT+ 9*PROPERTY_WIDTH - BUTTON_HEIGHT, COLOURS["GREEN"],False, (BOARD_WIDTH - 2*PROPERTY_HEIGHT)/3),
-                         Button("COUNTER", PROPERTY_HEIGHT + (BOARD_WIDTH - 2*PROPERTY_HEIGHT)/3, PROPERTY_HEIGHT+ 9*PROPERTY_WIDTH - BUTTON_HEIGHT, COLOURS["ORANGE"], False, (BOARD_WIDTH - 2*PROPERTY_HEIGHT)/3),
+                         #Button("COUNTER", PROPERTY_HEIGHT + (BOARD_WIDTH - 2*PROPERTY_HEIGHT)/3, PROPERTY_HEIGHT+ 9*PROPERTY_WIDTH - BUTTON_HEIGHT, COLOURS["ORANGE"], False, (BOARD_WIDTH - 2*PROPERTY_HEIGHT)/3),
                          Button("REJECT", PROPERTY_HEIGHT + 2*(BOARD_WIDTH - 2*PROPERTY_HEIGHT)/3,PROPERTY_HEIGHT + 9 * PROPERTY_WIDTH - BUTTON_HEIGHT, COLOURS["RED"], False, (BOARD_WIDTH - 2*PROPERTY_HEIGHT)/3)
                         ],
 
@@ -96,10 +95,8 @@ class Board(pygame.Surface):   #this class creates the 40 instances of the locat
         self.fill((200, 200, 255))
         for p in self.properties:
             p.draw_propertys(self) #this goes through all the propertys and draws them to the board
-        player_buttons = []
         for i in range(len(list_of_players)):
-            player_buttons.append(list_of_players[i].draw_player_square(self, BOARD_WIDTH, i, WINDOW_WIDTH-BOARD_WIDTH, WINDOW_HEIGHT/len(list_of_players),turn)) #this will draw the rectangles on the right which store player info
-        return player_buttons
+            list_of_players[i]. draw_player_square(self, BOARD_WIDTH, i, WINDOW_WIDTH-BOARD_WIDTH, WINDOW_HEIGHT/len(list_of_players),turn) #this will draw the rectangles on the right which store player info
 
     def draw_onto_board(self,player_pos, action_taken, other_card):
         self.draw_action(action_taken, player_pos, other_card) #this will draw graphics on the screen depending on what happens
@@ -177,7 +174,16 @@ class Board(pygame.Surface):   #this class creates the 40 instances of the locat
 
 
 
+    def convert_for_send(self, pl_list):
+        prop_list = []
+        for prop in self.properties:
+            prop_index = prop.owned
+            if prop.owned != None:
+                prop_index = pl_list.index(prop.owned)
+            prop_list.append([prop.mortgage, prop_index, prop.amount_houses, prop.full_set])
+        return prop_list
 
+    def convert_for_use(self, ):
 
 
 

@@ -1,5 +1,4 @@
 import pygame
-import textwrap
 # Colours
 COLOURS = {
     "BROWN" : (179,116,6),
@@ -43,7 +42,7 @@ action_time = 0
 #this will be used for timers or delays
 other_card = None
 #used when dealing with a property that the player is not on
-
+jail_list = []
 
 #property figures
 number_of_properties = 40

@@ -11,7 +11,7 @@ win = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 clock = pygame.time.Clock()
 
 
-pl_list = [Player(0, 14, COLOURS["RED"] ,"Player 1"),Player(0, 14, COLOURS["DARK BLUE"], "Player 2"),Player(0, 14, COLOURS["YELLOW"], "Player 3")]
+pl_list = [Player(0, 14, COLOURS["RED"] ,starting_money,"Player 1", []),Player(0, 14, COLOURS["DARK BLUE"], starting_money,"Player 2", []),Player(0, 14, COLOURS["YELLOW"], starting_money, "Player 3", [])]
 
 board = Board(WINDOW_WIDTH, WINDOW_HEIGHT)#the Board is a class within board.py
 #using the board class it then sets up all the properties needing to be made
@@ -35,48 +35,26 @@ def choose_deal_player(player_buttons, deal_player, current_player):
 
 
 
-def redraw_window(win, action_taken, action_time, have_enough_money, amount_required, other_card):
-    win.fill((200,200,255))
+def redraw_window(action_taken,players, turn, other_card):
+    board.fill((200,200,255))
 
-    player_buttons = board.draw_background(pl_list, turn)
+    board.draw_background(pl_list, turn)
 
     for i in pl_list:
         i.draw(board)
 
     if action_taken == 3 or action_taken == 4:
-        print(action_taken)
         deal.draw()
-        if action_taken == 3:
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                deal.add_propertys()
+
 
     elif action_taken == 6:
         auction.draw()
-        if auction.check_finished():
-            auction.players[0].buy_property(board, pl_list[turn], auction.amount)
-            action_taken = 1
 
-
-    elif action_taken == 7 or action_taken == 8 or action_taken == 9:
-        action_time = time.time() if action_time == 0 else action_time
-        if time.time() - action_time >= 3:
-            if action_taken == 7:
-                have_enough_money, amount_required = pl_list[turn].pay_rent(board)
-            elif action_taken == 8:
-                have_enough_money, amount_required = pl_list[turn].pay_tax(board)
-            action_taken = 1
-            action_time = 0
+    board.draw_onto_board(players[turn].pos, action_taken, other_card)
 
 
 
-    elif action_taken == 11:
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            if pl_list[turn].check_owned_property():
-                other_card = board.enlarge_property()
-                action_taken = 5
-
-    return player_buttons, action_taken, have_enough_money, amount_required, action_time, other_card
-
+#code that is not to do with drawing needs to be taken out
 
 
 while run:
@@ -86,9 +64,9 @@ while run:
             run = False
 
 
-        player_buttons, action_taken, have_enough_money, amount_required, action_time, other_card = \
-            redraw_window(win, action_taken, action_time, have_enough_money, amount_required,  other_card)
-
+        
+        redraw_window(action_taken,pl_list, turn, other_card)
+        #get rid of equals just leave function as the paramaters will be obtained from the server sending them
 
 
 
@@ -98,10 +76,13 @@ while run:
 
             #this draws the players to the board, circling through them
 
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_LEFT:
+                p = int(input("Enter player number: "))
+                deal_player = p
 
         #this is to do with the movement of the player
         if event.type == pygame.MOUSEBUTTONDOWN:
-            deal_player = choose_deal_player(player_buttons, deal_player, pl_list[turn])
             x = board.check_for_button_click(action_taken)
             if x != None:
 
@@ -115,7 +96,6 @@ while run:
                         if not check_for_triple(triple_checker):
                             pl_list[turn].move(roll[0]) #when the player clicks roll dice it gets the number and then using the property_action function determines what property has been landed on
                             action_taken = pl_list[turn].property_action(board)
-                            pl_list[turn].pass_go(roll[0])
                         else:
                             pl_list[turn].to_jail()
                             jail_list.append(pl_list[turn])
@@ -139,13 +119,13 @@ while run:
 
                 elif x == "MAKE DEAL":
                     if deal_player != None:
-                        deal = Deal(pl_list[turn], deal_player, board)
+                        deal = Deal(pl_list[turn], pl_list[deal_player], board)
                         action_taken = 3
                     else:
-                        print("select a player")
+                        print("select a player, click a player rectangle on the right")
                         #board.no_deal_player()
 
-                elif x == "LOOK AT PROPERTYS":
+                elif x == "LOOK AT PROPERTIES":
                     action_taken = 11
 
                 elif x == "PURCHASE":
@@ -209,9 +189,31 @@ while run:
                     double = False
                     deal_player = None
                     action_taken = 0
+                    have_enough_money = True
                     if len(pl_list) <=1:
                         pygame.quit()
                         sys.exit()
+
+            if action_taken == 6:
+                if auction.check_finished():
+                    auction.players[0].buy_property(board, pl_list[turn], auction.amount)
+                    action_taken = 1
+
+            elif action_taken == 11:#when in look at propertys, click on owned property and it is displayed
+                if pl_list[turn].check_owned_property():
+                    other_card = board.enlarge_property()
+                    action_taken = 5
+
+
+        elif action_taken == 7 or action_taken == 8 or action_taken == 9:
+            action_time = time.time() if action_time == 0 else action_time
+            if time.time() - action_time >= 1.5:
+                if action_taken == 7:
+                    have_enough_money, amount_required = pl_list[turn].pay_rent(board)
+                elif action_taken == 8:
+                    have_enough_money, amount_required = pl_list[turn].pay_tax(board)
+                action_taken = 1
+                action_time = 0
 
 
         if pl_list[turn].land_on_go_to_jail(board):
@@ -220,17 +222,12 @@ while run:
 
 
 
-
-
-
-
         board.utility_station_rent("BLACK")
         board.utility_station_rent("BOARD COLOUR")
 
-        board.draw_onto_board(pl_list[turn].pos, action_taken, other_card)
 
-        #if list(BROWN) == board.properties[pl_list[turn].pos].colour:
-         #   print("skrrr skrrr")
+
+
 
         if pl_list[turn].money - amount_required >=0 and action_taken == 1 and have_enough_money == False:
             action_taken = pl_list[turn].property_action(board)
