@@ -28,7 +28,10 @@ BUTTON_WIDTH = WINDOW_WIDTH*15/128
 BUTTON_HEIGHT = WINDOW_WIDTH*5/64
 
 #fixed variables, stay the same each start of game
+auction = None
+deal = None
 have_enough_money = True
+deal_player = None
 amount_required = 0
 turn = 0
 #turn is used to go through each player to let them have there turn

@@ -95,8 +95,7 @@ class Player:
         else:
             return False
 
-    def check_owned_property(self):
-        x,y = pygame.mouse.get_pos()
+    def check_owned_property(self,x,y):
         for sets in self.owned_propertys:
             for p in sets:
                 if pygame.Rect(p.x, p.y, p.width, p.height).collidepoint(x,y):
@@ -146,6 +145,7 @@ class Player:
 
     def add_house(self, win, pos):
         current_property = win.properties[pos]
+        print(current_property.full_set)
         if current_property.full_set and not current_property.mortgage and self.money - current_property.houses_price >=0:
             if current_property.amount_houses < 5:
                 self.money -= current_property.houses_price
@@ -212,11 +212,11 @@ def check_rect(rect):
 
 
 class Auction:
-    def __init__(self, auction_list, property, win):
+    def __init__(self, auction_list, property_pos, win):
         self.players = auction_list.copy()
         self.amounts = []
         self.amount = 0
-        self.property = property
+        self.property = win.properties[property_pos]
         self.surface = win
         self.turn = 0
 
@@ -274,9 +274,9 @@ class Deal:
 
 
 
-    def add_propertys(self):
-        property_give = self.player.check_owned_property()
-        property_get = self.targeted_player.check_owned_property()
+    def add_propertys(self,x,y):
+        property_give = self.player.check_owned_property(x,y)
+        property_get = self.targeted_player.check_owned_property(x,y)
         if property_give != None :
             self.propertys_give.remove(property_give) if property_give in self.propertys_give else self.propertys_give.append(property_give)
         if property_get != None:

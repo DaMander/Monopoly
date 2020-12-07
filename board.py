@@ -72,6 +72,7 @@ class Board(pygame.Surface):   #this class creates the 40 instances of the locat
                          Button("BID 10", PROPERTY_HEIGHT+10+PROPERTY_ENLARGE_WIDTH/3, PROPERTY_HEIGHT+ 7*PROPERTY_WIDTH, COLOURS["ORANGE"], False, PROPERTY_ENLARGE_WIDTH/3),
                          Button("BID 1", PROPERTY_HEIGHT +10 +2*PROPERTY_ENLARGE_WIDTH/3, PROPERTY_HEIGHT+ 7*PROPERTY_WIDTH, COLOURS["PINK"], False, PROPERTY_ENLARGE_WIDTH/3),#auction
                          Button("LEAVE", PROPERTY_HEIGHT+ PROPERTY_WIDTH + 10, PROPERTY_HEIGHT, COLOURS["RED"], False, 2*PROPERTY_HEIGHT, PROPERTY_WIDTH/2)],
+
                         ]
 
         self.occuring_button = Button("BANK", WINDOW_WIDTH - 150, 0, COLOURS["RED"], False), Button("BACK", PROPERTY_HEIGHT + 9/2 *PROPERTY_WIDTH, PROPERTY_HEIGHT+1/4*PROPERTY_WIDTH, COLOURS["RED"], True, PROPERTY_HEIGHT, PROPERTY_WIDTH/2)
@@ -186,7 +187,10 @@ class Board(pygame.Surface):   #this class creates the 40 instances of the locat
     def convert_for_use(self, send_board, pl_list):
         for prop_num in range(len(send_board)):
             self.properties[prop_num].mortgage = send_board[prop_num][0]
-            self.properties[prop_num].owned = pl_list[send_board[prop_num][1]] if send_board[prop_num][1] != None else None
+            try:
+                self.properties[prop_num].owned = pl_list[send_board[prop_num][1]] if send_board[prop_num][1] != None else None
+            except:
+                print(send_board[prop_num][1])
             self.properties[prop_num].amount_houses = send_board[prop_num][2]
             self.properties[prop_num].full_set = send_board[prop_num][3]
 

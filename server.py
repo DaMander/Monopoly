@@ -2,10 +2,10 @@ import time
 
 from constants import  *
 from _thread import *
-from board import Board
-import  _pickle as pickle
+import _pickle as pickle
 import socket
 from game_rules import *
+from player import Auction,Deal,Player
 
 
 
@@ -13,8 +13,8 @@ from game_rules import *
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR,1)
 
-HOST = '127.0.0.1'  # Standard loopback interface address (localhost)
-PORT = 5672       # Port to listen on (non-privileged ports are > 1023)
+HOST = '127.0.0.1'  # local host
+PORT = 5672       # Port to listen on
 
 try:
     sock.bind((HOST, PORT))
@@ -31,13 +31,23 @@ print(f"server started with IP-{HOST}")
 players = {}
 connections = 0
 _id = 0
-start = False
 board = Board(WINDOW_WIDTH, WINDOW_HEIGHT)
+board.sort_sets()
+
+
+def convert_list(start_list):
+    converted_list = []
+    for element in start_list:
+        if isinstance(element, list):
+            converted_list += convert_list(element)
+        else:
+            converted_list.append(board.properties.index(element))
+    return converted_list
 
 
 def threaded_client(conn, _id):
 
-    global players, connections, start, action_taken, triple_checker, jail_list, double, turn, have_enough_money, other_card, action_time,amount_required
+    global players, connections, action_taken, triple_checker, jail_list, double, turn, have_enough_money, other_card, action_time,amount_required, auction, deal, deal_player
 
     player_id = _id
 
@@ -59,6 +69,9 @@ def threaded_client(conn, _id):
             pl_list = []
             for i in list(players):
                 pl_list.append(players[i])
+            player_squares = []
+            for i in range(len(pl_list)):
+                player_squares.append((int(BOARD_WIDTH), int(i*WINDOW_HEIGHT/len(pl_list)), int(WINDOW_WIDTH-BOARD_WIDTH), int(WINDOW_HEIGHT/len(pl_list))))
 
             #recieve from client
             data = conn.recv(32)
@@ -99,12 +112,35 @@ def threaded_client(conn, _id):
                 deal_player = None
                 action_taken = 0  # this will reset it and then let the next player have their turn
 
+            elif data == "MAKE DEAL":
+                if deal_player != None:
+                    deal = Deal(pl_list[turn], deal_player, board)
+                    action_taken = 3
+                else:
+                    print("select a player, click a player rectangle on the right")
+
             elif data == "LOOK AT PROPERTIES":
                 action_taken = 11
 
             elif data == "PURCHASE":
                 if pl_list[turn].buy_property(board):
                     action_taken = 1
+
+            elif data == "AUCTION":
+                auction = Auction(pl_list, pl_list[turn].pos, board)
+                action_taken = 6
+
+            elif data == "BID 1":
+                auction.add_amount(1)
+
+            elif data == "BID 10":
+                auction.add_amount(10)
+
+            elif data == "BID 100":
+                auction.add_amount(100)
+
+            elif data == "LEAVE":
+                auction.leave()
 
             elif data == "BACK":
                 if action_taken == 5:
@@ -114,6 +150,7 @@ def threaded_client(conn, _id):
                     other_card = None
 
             elif data == "+ HOUSE":
+                print(board.properties[other_card].full_set)
                 pl_list[turn].add_house(board, other_card)
 
             elif data == "- HOUSE":
@@ -128,6 +165,15 @@ def threaded_client(conn, _id):
             elif data == "FINISHED":
                 action_taken = 4
 
+            elif data == "ACCEPT":
+                action_taken = 1
+                deal.accept()
+                deal = None
+
+            elif data == "REJECT":
+                action_taken = 1
+                deal = None
+
             elif data == "BANK":
                 # function that takes in have_enough_money variable to decide whether another player takes there propertys else it goes to the bank and free parking
                 pl_list[turn].remove_assets(board, have_enough_money)
@@ -140,18 +186,14 @@ def threaded_client(conn, _id):
                 action_taken = 0
                 have_enough_money = True
 
-            send_board = board.convert_for_send(pl_list)
 
-            pl_dict = {}
-            for i in list(players):
-                pl_index = []
-                for set in players[i].owned_propertys:
-                    for prop in set:
-                        pl_index.append(board.properties.index(prop))
-                pl_dict[i] = list(players[i].return_variables())
-                pl_dict[i][-1] = pl_index
+            elif action_taken == 6:
+                if auction.check_finished():
+                    auction.players[0].buy_property(board, pl_list[turn], auction.amount)
+                    action_taken = 1
 
-            if action_taken == 7 or action_taken == 8 or action_taken == 9:
+
+            elif action_taken == 7 or action_taken == 8 or action_taken == 9:
                 action_time = time.time() if action_time == 0 else action_time
                 if time.time() - action_time >= 1.5:
                     if action_taken == 7:
@@ -160,6 +202,20 @@ def threaded_client(conn, _id):
                         have_enough_money, amount_required = pl_list[turn].pay_tax(board)
                     action_taken = 1
                     action_time = 0
+
+            elif data.split(" ")[0] == "mousepos":#when in look at propertys, click on owned property and it is displayed
+                x, y = int(data.split(" ")[1]), int(data.split(" ")[2])
+                if action_taken == 11:
+                    if pl_list[turn].check_owned_property(x,y):
+                        other_card = board.properties.index(pl_list[turn].check_owned_property(x,y))
+                        action_taken = 5
+                elif action_taken == 3:
+                    deal.add_propertys(x,y)
+                for i in range(len(player_squares)):
+                    if pygame.Rect(player_squares[i]).collidepoint(x,y) and i != turn:
+                        deal_player = pl_list[i]
+
+
 
             if pl_list[turn].land_on_go_to_jail(board):
                 jail_list.append(pl_list[turn])
@@ -170,9 +226,31 @@ def threaded_client(conn, _id):
             if pl_list[turn].money - amount_required >= 0 and action_taken == 1 and have_enough_money == False:
                 action_taken = pl_list[turn].property_action(board)
 
+            send_board = board.convert_for_send(pl_list)
+
+            pl_dict = {}#need to make function where all stuff that are sent but converted before are converted on one nice function
+            for i in list(players):  # finds connection id
+                pl_index = convert_list(players[i].owned_propertys)
+                pl_dict[i] = list(players[i].return_variables())
+                pl_dict[i][-1] = pl_index  # makes the owned propertys the pl_index list
 
 
-            data_send = pickle.dumps((send_board,action_taken, pl_dict, turn, other_card, None, None))
+            if auction == None:
+                send_auction = auction
+            else:
+                send_auction = (pl_list[turn].pos, auction.amounts, auction.amount, auction.turn)
+
+            if deal == None:
+                send_deal = deal
+            else:
+                send_deal = (pl_list.index(deal_player),convert_list(deal.propertys_give),convert_list(deal.propertys_get))
+
+
+
+
+
+
+            data_send = pickle.dumps((send_board,action_taken, pl_dict, turn, other_card, send_deal, send_auction))
 
 
             conn.send(data_send)
@@ -188,6 +266,15 @@ def threaded_client(conn, _id):
     print(f"{name},({player_id}) disconnected")
 
     connections -= 1
+
+    player_index = pl_list.index(players[player_id])
+    for props in board.properties:
+        if props.owned != None:
+            if props.owned == players[player_id]:
+                props.owned = None
+            else:
+                print(props.owned)
+
     del players[player_id]
     if len(players) > 0:
         turn %= len(players)
