@@ -1,0 +1,24 @@
+{
+  "START GAME": "(Image left) When you click START GAME you will be entered into a game. You will see the players on the right and a START button, only the host can click it to begin the game. If you can not enter the game then the host has already started the game.",
+
+  "ROLL DICE": "(Image right) When it is your turn your player box will be highlighted green and you can click the roll dice button.",
+
+  "Unowned property": "(Image left) If you land on an unowned property you can either buy it or list it up for auction.",
+
+  "Auction": "(Image right) If you auction it you and the other players take turns bidding on the property starting with the host. The current value of the bid will appear on the right next to the property. If you do not want to bid or can't, then click the leave button at the top of the card.",
+
+  "Won property": "(Image left) If you win an auction or purchase a property then the property's colour will appear in your player box.",
+
+  "End turn": "(Image right) Once you have rolled the dice and sorted what happens on the property you land on you then get three options: LOOK AT PROPERTIES, END TURN OR MAKE DEAL.",
+
+  "LOOK AT PROPERTIES": "(Image left) If you click LOOK AT PROPERTIES the options will disappear and a bck button will appear, you then have to click on a property you own (one that has your colour around it).",
+
+  "Click property": "(Image right) Once you have clicked on a property you own you can then MORTGAGE, UNMORTGAGE or buy/remove houses if you have the full set of the colours. To get back to the end turn screen click BACK twice.",
+
+  "MAKE DEAL": "(Image left) If you click MAKE DEAL, nothing will happen. You first have to click on a player on the right you want to deal with then you'll be able to select properties they own and you own and can select how much money you'll give or takeaway.",
+
+  "Finish deal": "(Image right) Once you've clicked FINISHED the player which has been offered the deal can choose to ACCEPT or REJECT it",
+
+  "Bankrupt": "(Image left) If you do not have enough money to pay a player or a tax card then you declare bankruptcy this is done by clicking the red button at the top right."
+
+}
