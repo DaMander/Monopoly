@@ -26,25 +26,6 @@ PROPERTY_ENLARGE_HEIGHT = WINDOW_WIDTH*13/32
 BUTTON_WIDTH = WINDOW_WIDTH*15/128
 BUTTON_HEIGHT = WINDOW_WIDTH*5/64
 
-#fixed variables, stay the same each start of game
-auction = None
-deal = None
-have_enough_money = True
-deal_player = None
-amount_required = 0
-turn = -1
-#turn is used to go through each player to let them have there turn
-triple_checker = 0
-#this variable checks whether a player has rolled three doubles in a row
-action_taken = 0
-#this number will change depending on where the player lands it'll decide which buttons are drawn and what actions the player can take
-double = False
-#when a player rolls a double they can still purchase or pay rent to property so when it's complete this will validate whether there at the end of their turn
-action_time = 0
-#this will be used for timers or delays
-other_card = None
-#used when dealing with a property that the player is not on
-jail_list = []
 
 game_finished = False
 

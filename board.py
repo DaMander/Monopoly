@@ -7,7 +7,7 @@ pygame.init()
 
 
 class Board(pygame.Surface):   #this inherits from the pygame.surface class
-    def __init__(self, width, height):
+    def __init__(self, width: int, height: int):
         super().__init__((width, height)) #this allows me to use the methods and attributes of the pygame.surface class
         #self.cards = []
         self.properties = [] #this will be filled with instances of the property class
@@ -40,6 +40,7 @@ class Board(pygame.Surface):   #this inherits from the pygame.surface class
         for i in range(9):
             self.properties.append(Property("hori", SQUARE_MEASUREMENTS - PROPERTY_HEIGHT, PROPERTY_HEIGHT + (i * PROPERTY_WIDTH), *file[str(len(self.properties))].values()))
 
+        self.sort_sets()
 
 
         self.buttons = [[Button("ROLL DICE", SQUARE_MEASUREMENTS / 2, SQUARE_MEASUREMENTS / 2, COLOURS["GREEN"], True)],
@@ -107,18 +108,18 @@ class Board(pygame.Surface):   #this inherits from the pygame.surface class
 
 
 
-    def draw_background(self, list_of_players, turn):
+    def draw_background(self, list_of_players: list, turn: int):
         self.fill((200, 200, 255))#fills the background a light blue colour
         for p in self.properties: #this goes through all the properties and draws them to the board
             p.draw_propertys(self)
         for player_index in range(len(list_of_players)):#goes through the players and draws their player squares on the board
             list_of_players[player_index]. draw_player_square(self, player_index, SQUARE_MEASUREMENTS/len(list_of_players),turn)
 
-    def draw_onto_board(self,player_pos, action_taken, other_card):
+    def draw_onto_board(self,player_pos: int, action_taken: int, other_card: int):
         self.draw_action(action_taken, player_pos, other_card) #this will draw graphics on the screen depending on what happens
         self.draw_buttons(action_taken)
 
-    def draw_buttons(self, action_taken):
+    def draw_buttons(self, action_taken: int):
         self.occuring_button[0].draw(self)  # the bankrupt button will always be drawn
         if action_taken == 3 or action_taken == 5 or action_taken == 11:  # draws the back button if make deal, look at propertys or property is clicked on
             self.occuring_button[1].draw(self)
@@ -129,38 +130,25 @@ class Board(pygame.Surface):   #this inherits from the pygame.surface class
 
 
 
-    def draw_action(self, action_taken, player_pos, other_card):
+    def draw_action(self, action_taken: int, player_pos: int, other_card: int):
         pos = player_pos if other_card == None else other_card#if other_card = None then the player is dealing with the property their on if it doesn't then they're dealing with a property they're not on
         current_property = self.properties[pos]#finds the property the game is focusing on
         if action_taken == 2 or action_taken == 5 or action_taken == 7:#these are when a purchase, a player looking at their propertys or paying rent happens
             current_property.enlarge_property(self,1) #this draws the enlarged property card to the screen
-
             if action_taken == 7:#when paying rent occurs
-                n = 2 if current_property.full_set == True and current_property.amount_houses == 0 else 1 #if the player had a full set then the rent just for the card is doubled this will display the amount the rent will be
-                render_text(self, font,f'{current_property.owned.username} owns this property you paid {n*current_property.rent[str(current_property.amount_houses)]}'
-                            , COLOURS["BLACK"], (WINDOW_WIDTH*13/64, WINDOW_WIDTH*55/128))
-
+                n = 2 if current_property.full_set is True and current_property.amount_houses == 0 else 1 #if the player had a full set then the rent just for the card is doubled this will display the amount the rent will be
+                text = f'{current_property.owned.username} owns this property you paid {n*current_property.rent[str(current_property.amount_houses)]}'
+                render_text(self, font, text, COLOURS["BLACK"], (WINDOW_WIDTH*13/64, WINDOW_WIDTH*55/128))
         elif action_taken == 8 or action_taken == 9:#when a player lands on community chest, tax or chance property
             current_property.enlarge_card(self)#draws a card to the board with the information about where they landed
-            """if action_taken == 9:
-                x = random.randint(0,len(self.cards)-1)
-                render_text(self, font, f'{self.cards[x].text}', COLOURS["BLACK"],(300,300))"""
+
+    def draw_end_screen(self, pl_list, turn):
+        pygame.draw.rect(self, COLOURS["ORANGE"], (0, 0, WINDOW_WIDTH, SQUARE_MEASUREMENTS))
+        render_text(self, font, f'{pl_list[turn].username} has won', COLOURS["WHITE"],
+                    (WINDOW_WIDTH / 2, SQUARE_MEASUREMENTS / 2))
 
 
-            """
-
-    def enlarge_property(self):
-        print("Get the fock out of town")
-        for property in self.properties:
-            if property.check_for_click_prop(): #checks if players cursor is on a property, returns True if it is.
-                if property.purchase != None:#if it has a purchase value then the player can obtain and interact with it
-                    property.enlarge_property(self,1)
-                    return self.properties.index(property)
-                elif property.height != property.width :
-                    property.enlarge_card(self)
-                    
-                    """
-    def check_for_button_click(self, action_taken):
+    def check_for_button_click(self, action_taken: int):
         if action_taken < 7:#the buttons list maximum index is 7 so action_taken has to be lower
             for button in self.buttons[action_taken]:
                 if button.check_for_press():#checks if player's co_ords are on button, returns True if it is
@@ -173,7 +161,7 @@ class Board(pygame.Surface):   #this inherits from the pygame.surface class
 
 
 
-    def utility_station_rent(self, colour):
+    def utility_station_rent(self, colour: str):
         # this is used for the station and utility propertys as the rent works differently to the other propertys.
         # The function finds out who owns the propertys and how many they own and then changes the houses value to
         # fit with how many each player has
@@ -182,7 +170,7 @@ class Board(pygame.Surface):   #this inherits from the pygame.surface class
             owned_players.append(p.owned)#appends the player who owns the property
         counts = [[username, owned_players.count(username)] for username in set(owned_players)]#the set removes any repeats so if the player owns 2 they'll only be in the set once.
         for i in range(len(counts)): #It then goes through the players in the set and counts how many times they appear in the owned_propertys
-            if counts[i][0] != None:#If the username is None it means nobody owns the property
+            if counts[i][0] is not None:#If the username is None it means nobody owns the property
                 for p in self.SORTED_SETS[colour]:
                     if p.owned == counts[i][0]:
                         p.amount_houses = counts[i][1] -1
@@ -192,7 +180,7 @@ class Board(pygame.Surface):   #this inherits from the pygame.surface class
 
 
 
-    def convert_for_send(self, pl_list): #This goes through the propertys in the game and returns a list with all the property information that could change over the course of a game.
+    def convert_for_send(self, pl_list: list): #This goes through the propertys in the game and returns a list with all the property information that could change over the course of a game.
         prop_list = []                   #It goes through which player owns the property and returns their index in the pl-list to be sent over this is so an integer is being sent instead of the player instance.
         for prop in self.properties:
             prop_index = prop.owned
@@ -201,11 +189,12 @@ class Board(pygame.Surface):   #this inherits from the pygame.surface class
             prop_list.append([prop.mortgage, prop_index, prop.amount_houses, prop.full_set])#these variables can change over a game they are integers and TRUE/FALSE.
         return prop_list #returns the variables that change for each property in the same order that they go around the board in.
 
-    def convert_for_use(self, send_board, pl_list): #this is used in the client to update their instance of the board class
+    def convert_for_use(self, send_board:list, pl_list: list): #this is used in the client to update their instance of the board class
         for prop_num in range(len(send_board)):#this will go through all the property information that could've changed. The send-board info will be in the same order as the self.properties list
             self.properties[prop_num].mortgage = send_board[prop_num][0]  #changing the mortgage value to the one sent over
             try:#TODO remove try and except clauses
-                self.properties[prop_num].owned = pl_list[send_board[prop_num][1]] if send_board[prop_num][1] is not None else None #if it does not equal None then it is a player_index and thus the property.owned will return back to the player instance who owns it
+                if send_board[prop_num][1] is not None:
+                    self.properties[prop_num].owned = pl_list[send_board[prop_num][1]] #if it does not equal None then it is a player_index and thus the property.owned will return back to the player instance who owns it
             except:
                 print(send_board[prop_num][1])
             self.properties[prop_num].amount_houses = send_board[prop_num][2]
@@ -221,7 +210,7 @@ class Board(pygame.Surface):   #this inherits from the pygame.surface class
 
 
 class Property(pygame.Surface): #this class is used when drawing the squares to the board, used in the Board class to allow all the instances of location to be added to a list
-    def __init__(self, orientation, x, y, name, purchase = None, rent = None, houses_price = None, colour = "BOARD COLOUR"):
+    def __init__(self, orientation:str, x:int, y:int, name:str, purchase:int = None, rent: dict = None, houses_price:int = None, colour:str = "BOARD COLOUR"):
         super().__init__((PROPERTY_WIDTH, PROPERTY_HEIGHT))
         self.width = PROPERTY_WIDTH if orientation == "vert" else PROPERTY_HEIGHT
         self.height = PROPERTY_WIDTH if orientation == "hori" else PROPERTY_HEIGHT
@@ -238,21 +227,19 @@ class Property(pygame.Surface): #this class is used when drawing the squares to 
         self.full_set = False
         #COLOUR
 
-
-
     def draw_propertys(self, win):
         self.fill((200, 200, 255))
         pygame.draw.rect(win, self.colour, self.find_colour_box_pos())
-        if self.owned is not None:
-            pygame.draw.rect(win,self.owned.colour,(self.x, self.y, self.width, self.height),5) #this will draw the players icon on the property to show who owns it
-        if self.houses_price is not None:
-            self.draw_houses(win)
+        if self.owned is not None: #this means a player owns the property
+            pygame.draw.rect(win,self.owned.colour,(self.x, self.y, self.width, self.height),5) #this will draw the players colour around the property
+        if self.houses_price is not None: #this means it is a property that houses can be placed on
+            self.draw_houses(win) #draw the amount of houses on the property
         if self.mortgage:
-            pygame.draw.line(win, COLOURS["RED"], (self.x, self.y), (self.x + self.width, self.y + self.height))
+            pygame.draw.line(win, COLOURS["RED"], (self.x, self.y), (self.x + self.width, self.y + self.height)) #draw a diagonal red line across property
         pygame.draw.rect(win, COLOURS["BLACK"], (self.x, self.y, self.width, self.height), 1)
     """create a function which manages the text so it fits within the property space"""
 
-    def find_row(self):
+    def find_row(self):#This will find where the property is in relation to the board layout
         if self.width > self.height:
             if self.x < SQUARE_MEASUREMENTS/2:
                 return "LEFT"
@@ -264,7 +251,7 @@ class Property(pygame.Surface): #this class is used when drawing the squares to 
             else:
                 return "TOP"
 
-    def find_colour_box_pos(self):
+    def find_colour_box_pos(self): #this finds the correct position, width and height for a graphic that is drawn on the properties to show their colour
         row = self.find_row()
         if row == "LEFT":
             colour_box = (self.x + PROPERTY_HEIGHT*3/4, self.y, self.width / 4, self.height)
@@ -277,29 +264,29 @@ class Property(pygame.Surface): #this class is used when drawing the squares to 
         return colour_box
 
     def draw_houses(self, win):
-        if self.amount_houses == 5:
-            pygame.draw.rect(win, COLOURS["RED"], self.draw_hotel())
+        if self.amount_houses == 5:#this means the player has a hotel
+            pygame.draw.rect(win, COLOURS["RED"], (self.draw_hotel()))#a red square drawn for the hotel
         else:
-            render_text(win, font, str(self.amount_houses), COLOURS["GREEN"], (40 + self.x, self.y + 40))
+            render_text(win, font, str(self.amount_houses), COLOURS["GREEN"], (40 + self.x, self.y + 40)) #it will display the number of houses the property has
 
-    def draw_hotel(self):
+    def draw_hotel(self):#finds the correct position for the hotel graphic to be drawn
         row = self.find_row()
         if row == "LEFT":
-            return (self.x + self.height/4, self.y + PROPERTY_WIDTH/2, 20, 20)
+            return self.x + self.height / 4, self.y + PROPERTY_WIDTH / 2, 20, 20
         elif row == "RIGHT":
-            return (self.x + (PROPERTY_HEIGHT/4)*3, self.y + PROPERTY_WIDTH / 2, 20, 20)
+            return self.x + (PROPERTY_HEIGHT / 4) * 3, self.y + PROPERTY_WIDTH / 2, 20, 20
         elif row == "BOTTOM":
-            return (self.x + PROPERTY_WIDTH/2, self.y + (PROPERTY_HEIGHT/4)*3, 20, 20)
+            return self.x + PROPERTY_WIDTH / 2, self.y + (PROPERTY_HEIGHT / 4) * 3, 20, 20
         else:
-            return (self.x + PROPERTY_WIDTH/2, self.y + PROPERTY_HEIGHT/4, 20, 20)
+            return self.x + PROPERTY_WIDTH / 2, self.y + PROPERTY_HEIGHT / 4, 20, 20
 
 
     def property_actions(self, player):
-        if self.purchase != None and self.owned == None: #this means it's an unowned property card
+        if self.purchase is not None and self.owned is None: #this means it's an unowned property card
             return 2
-        elif self.purchase != None and self.owned != None and self.owned != player and self.mortgage == False:#this means it's an owned property
+        elif self.purchase is not None and self.owned is not None and self.owned is not player and self.mortgage is False:#this means it's an owned property
             return 7
-        elif self.purchase == None and self.rent != None:#this means it is a tax card
+        elif self.purchase is None and self.rent is not None:#this means it is a tax card
             return 8
         elif self.name == "COMMUNITY CHEST":
             return 9
@@ -308,71 +295,61 @@ class Property(pygame.Surface): #this class is used when drawing the squares to 
         else:
             return 1
 
-
-
-
-
-
-
-    def check_for_click_prop(self):
+    def check_for_click_prop(self):#this checks whether the players mouse position is on a property on the board
         x, y = pygame.mouse.get_pos()
         if pygame.Rect(self.x,self.y,self.width,self.height).collidepoint(x,y):
             return True
 
-    def enlarge_property(self, win, pos):#this is graphically used to show a card which can be purchased onto the board
+    def enlarge_property(self, win, pos: int):#this is graphically used to show a card which can be purchased onto the board
         starting_x = PROPERTY_HEIGHT + (PROPERTY_WIDTH * pos)  # if pos = 0 the property is on the left, 1 makes the property in the middle and 2 will put it on the right
         pygame.draw.rect(win, COLOURS["WHITE"], (starting_x, PROPERTY_HEIGHT, 7 * PROPERTY_WIDTH, 9 * PROPERTY_WIDTH))
         pygame.draw.rect(win, COLOURS["BLACK"], (starting_x + WINDOW_WIDTH*1/128, WINDOW_WIDTH*9/128, WINDOW_WIDTH*5/16, WINDOW_WIDTH*13/32), 1)
         colour_box = (starting_x + WINDOW_WIDTH*1/64,WINDOW_WIDTH*5/64, WINDOW_WIDTH*19/64, WINDOW_WIDTH*1/16)
         x, y = pygame.Rect(colour_box).center
-        if self.houses_price is not None:
+        if self.houses_price is not None:#this means it's a property that houses can be put on
             self.draw_house_information(win, colour_box, x ,y)
         else:
-            if len(self.rent) > 2:
+            if len(self.rent) > 2: #it's a station property
                 self.draw_station_information(win, x, y)
-            else:
+            else:#it's a utility property
                 self.draw_utility_information(win, x, y)
         render_text(win, font, self.name, COLOURS["BLACK"], (x, y))
 
 
-    def draw_house_information(self, win, colour_box, x ,y):
+    def draw_house_information(self, win, colour_box: tuple, x: int ,y: int):#puts text on screen of how much each house will cost for rent
         pygame.draw.rect(win, self.colour, colour_box)
         render_text(win, font, self.name, COLOURS["BLACK"], (x, y))
-        for i in range(len(self.rent)):
-            render_text(win, font, f'Rent with {str(i)} house {self.rent[str(i)]}', COLOURS["BLACK"],
-                        (x, y + PROPERTY_WIDTH + i * PROPERTY_WIDTH / 2))
-        render_text(win, font, f'Mortgage value {int(self.purchase / 2)}', COLOURS["BLACK"],
-                    (x, y + 9 * PROPERTY_WIDTH / 2))
-        render_text(win, font, f'Houses cost {self.houses_price} each', COLOURS["BLACK"],
-                    (x, y + 5 * PROPERTY_WIDTH))
-        render_text(win, font, f'Hotels, {self.houses_price} each plus 4 houses', COLOURS["BLACK"],
-                    (x, y + 11 * PROPERTY_WIDTH / 2))
+        for i in range(len(self.rent)):#it goes through how may houses it can have and puts the text of how much money the amount of houses will cost
+            render_text(win, font, f'Rent with {str(i)} house {self.rent[str(i)]}', COLOURS["BLACK"],(x, y + PROPERTY_WIDTH + i * PROPERTY_WIDTH / 2))
+        render_text(win, font, f'Mortgage value {int(self.purchase / 2)}', COLOURS["BLACK"],(x, y + 9 * PROPERTY_WIDTH /2))
+        render_text(win, font, f'Houses cost {self.houses_price} each', COLOURS["BLACK"],(x, y + 5 * PROPERTY_WIDTH))
+        render_text(win, font, f'Hotels, {self.houses_price} each plus 4 houses', COLOURS["BLACK"],(x, y + 11 * PROPERTY_WIDTH / 2))
 
-    def draw_station_information(self, win,x,y):
+    def draw_station_information(self, win,x:int,y:int):#puts text on screen of how much rent will cost depending on how many stations the player owns
         for i in range(len(self.rent)):
             render_text(win, font, f'Rent with {str(i + 1)} stations {self.rent[str(i)]}', COLOURS["BLACK"],
                         (x, y + 2 * PROPERTY_WIDTH + i * PROPERTY_WIDTH / 2))
         render_text(win, font, f'MORTGAGE VALUE - {int(self.purchase / 2)}', COLOURS["BLACK"],
                     (x, y + 5 * PROPERTY_WIDTH))
 
-    def draw_utility_information(self, win, x, y):
+    def draw_utility_information(self, win, x: int, y: int):#puts text on screen of how much rent will be depending on how many utilitys you own
         for i in range(len(self.rent)):
             render_text(win, font,
                         f'If {str(i + 1)} "utility" is owned rent is {self.rent[str(i)]} times amount shown on dice',
                         COLOURS["BLACK"], (x, y + 4 * PROPERTY_WIDTH + i * PROPERTY_WIDTH / 2))
 
 
-    def enlarge_card(self, win):
+    def enlarge_card(self, win):#draws a card to the screen if player lands on community chest, chance or tax telling them what happens
         pygame.draw.rect(win, COLOURS["WHITE"], (PROPERTY_HEIGHT, WINDOW_WIDTH*7/64, WINDOW_WIDTH*27/64, WINDOW_WIDTH*21/64))
         line = (PROPERTY_HEIGHT, WINDOW_WIDTH*7/64, WINDOW_WIDTH*27/64, WINDOW_WIDTH*21/64)
         pygame.draw.rect(win, COLOURS["BLACK"], line,1)
         x,y = pygame.Rect(line).center
         render_text(win,font, f'{self.name}', COLOURS["ORANGE"], (x,y))
-        if self.rent is not None: #this means they have landed on a tax card and I can use the center co-ordinates instead of re-doing them in the draw_action function
+        if self.rent is not None: #this means they have landed on a tax card
             render_text(win, font, f'You owe {self.rent}', COLOURS["RED"], (x, y + PROPERTY_WIDTH))
 
 class Button:
-    def __init__(self, text, x, y, color, centre, width = BUTTON_WIDTH, height = BUTTON_HEIGHT):
+    def __init__(self, text: str, x: int, y: int, color: tuple, centre: bool, width: int = BUTTON_WIDTH, height:int = BUTTON_HEIGHT):
         self.text = text
         self.color = color
         self.width = width
@@ -380,15 +357,14 @@ class Button:
         self.x = x - self.width / 2 if centre is True else x
         self.y = y - self.height / 2 if centre is True else y
 
-    def draw(self, win):
+    def draw(self, win):#draws the button to the screen
         pygame.draw.rect(win, self.color, (self.x, self.y, self.width, self.height))
-
         pygame.draw.rect(win, COLOURS["BLACK"], (self.x, self.y, self.width, self.height),1)
         font = pygame.font.SysFont("comicsans", int(WINDOW_WIDTH*1/32))
         text = font.render(self.text, 1, (255,255,255))
         win.blit(text, (self.x + round(self.width/2) - round(text.get_width()/2), self.y + round(self.height/2) - round(text.get_height()/2)))
 
-    def check_for_press(self):
+    def check_for_press(self):#checks if players mouse is on a button
         x,y = pygame.mouse.get_pos()
         if pygame.Rect(self.x,self.y, self.width, self.height).collidepoint(x,y):
             return True
