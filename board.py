@@ -42,7 +42,6 @@ class Board(pygame.Surface):   #this inherits from the pygame.surface class
 
         self.sort_sets()
 
-
         self.buttons = [[Button("ROLL DICE", SQUARE_MEASUREMENTS / 2, SQUARE_MEASUREMENTS / 2, COLOURS["GREEN"], True)],
 
                         [
@@ -88,9 +87,12 @@ class Board(pygame.Surface):   #this inherits from the pygame.surface class
 
                         ]
 
-        self.occuring_button = Button("BANK", WINDOW_WIDTH*113/128, 0, COLOURS["RED"], False), Button("BACK", WINDOW_WIDTH*35/128, WINDOW_WIDTH*19/256, COLOURS["RED"], True, PROPERTY_HEIGHT, PROPERTY_WIDTH / 2)
+        self.occuring_button = Button("BANKRUPT", WINDOW_WIDTH*113/128, 0, COLOURS["RED"], False), Button("BACK", WINDOW_WIDTH*35/128, WINDOW_WIDTH*19/256, COLOURS["RED"], True, PROPERTY_HEIGHT, PROPERTY_WIDTH / 2)
 
-
+        self.wait_for_players_buttons = [Button("START", SQUARE_MEASUREMENTS / 2, 3 * SQUARE_MEASUREMENTS / 4, COLOURS["GREEN"], True,int(WINDOW_WIDTH / 3)),
+                                         Button("Free Parking", SQUARE_MEASUREMENTS/2, BUTTON_HEIGHT, COLOURS["RED"], True, 2*BUTTON_WIDTH),
+                                         Button("No Sets", SQUARE_MEASUREMENTS/2, 2*BUTTON_HEIGHT, COLOURS["RED"], True, 2*BUTTON_WIDTH),
+                                         Button("Land On GO Get 400", SQUARE_MEASUREMENTS/2, 3*BUTTON_HEIGHT, COLOURS["RED"], True, 2*BUTTON_WIDTH)]
 
 
 

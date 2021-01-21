@@ -9,7 +9,7 @@ font = pygame.font.SysFont('arial', 26)
 class Player:
     def __init__(self, pos:int, radius:int, colour:tuple, money:int, username:str, out:bool, propertys:list):
         self.pos = pos
-        self.radius = radius
+        self._radius = radius
         self.colour = colour
         self.money = money
         self.username = username
@@ -27,8 +27,8 @@ class Player:
     def draw(self, win):#draws the player to the screen, their circle icon
         space = win.properties[self.pos]
         x, y = pygame.Rect(space.x, space.y, space.get_rect().w, space.get_rect().h).center
-        pygame.draw.circle(win, self.colour, (x, y), self.radius)
-        pygame.draw.circle(win, COLOURS["BLACK"], (x,y), self.radius,1)
+        pygame.draw.circle(win, self.colour, (x, y), self._radius)
+        pygame.draw.circle(win, COLOURS["BLACK"], (x,y), self._radius,1)
 
     def draw_player_square(self, win, player_index, height, turn):#draws the squares which contains player name, money and properties they own
         player_square = (SQUARE_MEASUREMENTS, player_index * height, WINDOW_WIDTH*29/64, height)
@@ -157,9 +157,9 @@ class Player:
         rent = space.rent#gets rent amount
         if self.check_they_can_pay(rent):#checks they have enough money to pay
             self.money -= rent
-            return True, 0
+            return True, 0, rent
         else:
-            return False, rent
+            return False, rent, rent
 
     def check_houses_can_be_altered(self, current_property, add_or_remove: str):#this function checks whether the player can remove or add houses to a property
         full_set = current_property.full_set #full set will be either True or False
@@ -209,6 +209,16 @@ class Player:
             self.to_jail()
             return True
 
+    def land_on_go(self):
+        if self.pos == 0:
+            self.money += 200
+
+    def land_on_free_parking(self):
+        if self.pos == 20:
+            return True
+        else:
+            return False
+
     def remove_assets(self, win, have_enough_money: bool):#if a player declares bankruptcy then there propertys and cash need to be removed and reset or given to the player who caused them to go bankrupt
         eliminator = win.properties[self.pos].owned#this is who owns the current property the player is on
         if have_enough_money or eliminator is None:#if the player had enough money then no other player got them out or a tax card which is owned by None could've got them out
@@ -225,11 +235,12 @@ class Player:
                     property.amount_houses = 0#if no-one got them out then the values that could've changed are re-set
                     property.mortgage = False
 
+
     def check_if_out(self):
         return self.out
 
     def return_variables(self): #this will be used to get all the information that will be sent over the server
-        return self.pos,self.radius,self.colour, self.money, self.username,self.out, self.owned_propertys
+        return self.pos,self._radius,self.colour, self.money, self.username,self.out, self.owned_propertys
 
 
 def check_rect(rect):
