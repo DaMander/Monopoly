@@ -352,6 +352,19 @@ class Server():
                 if props.owned == self.players[player_id]:
                     props.owned = None#changes the propertys owned status to None as that is what it was when the game started
 
+    def game_disconnect(self, player_id):
+        if list(self.players.values())[self.turn] == self.players[player_id]:  # if it is the players turn who is about to be disconnected then it resets to start the players turn otherwise there will be an error
+            self.action_taken = 0
+            self.deal = None
+        elif self.deal is not None:
+            if self.deal.targeted_player == self.players[player_id]:
+                self.action_taken = 1
+                self.deal = None
+        elif self.auction is not None:
+            if self.players[player_id] == self.auction.players[self.auction.turn]:
+                self.auction.calculate_turn()
+            self.auction.players_out.append(self.players[player_id])
+
     def disconnect_player(self, player_id, pl_list, conn):#if a player disconnects they need to be declared out in the game and then carry on with the next players turn
         if self.turn == -1:#as the game hasn't started they are removed so another player can join
             del self.players[player_id]
@@ -359,7 +372,8 @@ class Server():
             self.players[player_id].out = True#sets the players to out
             self.players[player_id].owned_propertys = []#removes the players propertys
         if len(self.players) - self.calculate_players_out() > 1 and self.turn != -1:#changes turn unless the game has finished
-            self.calculate_turn_number(pl_list)
+            if self.players[player_id] == pl_list[self.turn]:
+                self.calculate_turn_number(pl_list)
         conn.close()#disconnects the player
 
 
@@ -392,8 +406,8 @@ class Server():
                     print(traceback.format_exc())
                     break
 
-            if list(self.players.values())[self.turn] == self.players[player_id]:#if it is the players turn who is about to be disconnected then it resets to start the players turn otherwise there will be an error
-                self.action_taken = 0
+            self.game_disconnect(player_id)
+
 
             print(f"{name},({player_id}) disconnected")
 

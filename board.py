@@ -70,7 +70,6 @@ class Board(pygame.Surface):   #this inherits from the pygame.surface class
                          ],
 
                         [Button("ACCEPT", PROPERTY_HEIGHT, WINDOW_WIDTH*13/32, COLOURS["GREEN"], False, WINDOW_WIDTH*9/64, WINDOW_WIDTH*3/128),
-                         #Button("COUNTER", PROPERTY_HEIGHT + (SQUARE_MEASUREMENTS - 2*PROPERTY_HEIGHT)/3, PROPERTY_HEIGHT+ 9*PROPERTY_WIDTH - BUTTON_HEIGHT, COLOURS["ORANGE"], False, (SQUARE_MEASUREMENTS - 2*PROPERTY_HEIGHT)/3),
                          Button("REJECT", WINDOW_WIDTH*11/32, WINDOW_WIDTH*13/32, COLOURS["RED"], False, (SQUARE_MEASUREMENTS - 2 * PROPERTY_HEIGHT) / 3, WINDOW_WIDTH*3/128)
                         ],
 
@@ -293,7 +292,7 @@ class Property(pygame.Surface): #this class is used when drawing the squares to 
         elif self.name == "COMMUNITY CHEST":
             return 9
         elif self.name == "CHANCE":
-            return 1
+            return 9
         else:
             return 1
 

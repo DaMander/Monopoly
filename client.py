@@ -141,6 +141,12 @@ class Client:
         else:
             self.deal = None
 
+    def get_game_modes(self, game_modes):
+        game_mode_number = 0
+        for key, value in self.game_modes.items():
+            self.game_modes[key] = game_modes[game_mode_number]
+            game_mode_number += 1
+
     def decide_data_to_send(self, button_click):
         if button_click is not None:
             data = button_click
@@ -152,7 +158,6 @@ class Client:
                     data = button.text
         if self.game_finished:
             data = "info"
-        print(data)
         return data
 
     def redraw_window(self):
@@ -204,11 +209,7 @@ class Client:
                     recieved_board, self.action_taken, players, recieved_turn, other_card, recieved_deal, recieved_auction = recieved_server_info
                 else:
                     recieved_board, self.action_taken, players, recieved_turn, other_card, recieved_deal, recieved_auction, game_modes = recieved_server_info
-                    game_mode_number = 0
-                    for key, value in self.game_modes.items():
-                        self.game_modes[key] = game_modes[game_mode_number]
-                        game_mode_number+=1
-                    print(self.game_modes)
+                    self.get_game_modes(game_modes)
 
                 self.turn = recieved_turn[0]
                 self.game_finished = recieved_turn[1]
