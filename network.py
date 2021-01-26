@@ -9,19 +9,19 @@ class Network:
         self.port = 5672
         self.addr = (self.server, self.port)
 
-
-
     def connect(self, name):
-        self.client.connect(self.addr)
-        self.client.send(str.encode(name))
-        val = self.client.recv(8)
-        return int(val.decode())
+        try:
+            self.client.connect(self.addr)
+            self.client.send(str.encode(name))
+            val = self.client.recv(8)
+            return int(val.decode())
+        except ConnectionResetError:
+            return False
 
     def disconnect(self):
         self.client.close()
 
-
-    def send(self, data, pick = False):
+    def send(self, data, pick=False):
         try:
             if pick:
                 self.client.send(pickle.dumps(data))

@@ -61,6 +61,7 @@ class Player:
         return pygame.Rect(rect).collidepoint(x,y)
 
     def property_action(self, win):#finds out which property the player has landed on and what action will take place on that property
+        print(self.pos)
         action = win.properties[self.pos].property_actions(self)#returns an integer
         return action
 
@@ -105,9 +106,6 @@ class Player:
         for property in set:
             property.full_set = False
 
-
-
-
     def check_for_full_set(self, win, set):#checks if a players set matches the actual set needed for a full set
         set_colour = list(COLOURS)[list(COLOURS.values()).index(set[0].colour)]#returns the key of the COLOURS dictionary for colour set needed
         if all(elem in set for elem in win.SORTED_SETS[set_colour]):#this statement returns True if all the elements of the players set are in the actual set
@@ -121,28 +119,28 @@ class Player:
                 if pygame.Rect(p.x, p.y, p.width, p.height).collidepoint(x,y):
                     return p
 
-
-
-
-
     def buy_property(self, win, other_player = None, amount:int = None):#checks if player can afford property if they can they aquire the property and loose the amount it costs
         #when this is but into the main function the win will become the instance of the board class so the player and board can work in unison
         space = win.properties[self.pos if other_player is None else other_player.pos]#finding the property instance being bought
         amount = space.purchase if amount is None else amount
+        print(amount)
         if self.check_they_can_pay(amount):#returns True if they have enough money to pay for it
             self.money -= amount
             self.add_property(space,win)#adds property to players owned properties
             space.owned = self#properties owned status becomes the player object
             return True
         else:
-            print("insufficient funds") 
+            return False
 
-    def pay_rent(self, win):#finds out how much the player looses, gives it to the property's owner and checks if they can pay
+
+    def pay_rent(self, win, roll:int):#finds out how much the player looses, gives it to the property's owner and checks if they can pay
         #this will be used to player who owns the property that the current player has landed on and tax that the player lands on
         space = win.properties[self.pos]
         if space.owned != self and space.mortgage is not True:#if property is mortgaged or the player owns it then they can't pay rent
             rent = space.rent[str(space.amount_houses)]#accessing the property amount of houses which is a dictionary to find amount needed to pay
-            if space.full_set is True and space.amount_houses == 0:
+            if space.colour == COLOURS["BOARD COLOUR"]:
+                rent = rent*roll
+            elif space.full_set is True and space.amount_houses == 0:
                 rent *= 2#if player owns full set but no houses then rent is doubled
             if self.check_they_can_pay(rent):
                 self.money -= rent
@@ -159,7 +157,7 @@ class Player:
             self.money -= rent
             return True, 0, rent
         else:
-            return False, rent, rent
+            return False, rent, 0
 
     def check_houses_can_be_altered(self, current_property, add_or_remove: str):#this function checks whether the player can remove or add houses to a property
         full_set = current_property.full_set #full set will be either True or False
@@ -208,6 +206,8 @@ class Player:
         if self.pos == 30: #30 is the position of the go to jail slot on the board
             self.to_jail()
             return True
+        else:
+            return False
 
     def land_on_go(self):
         if self.pos == 0:
@@ -227,6 +227,7 @@ class Player:
             eliminator.money += self.money #gives the players money to the player who got them out
         for sets in self.owned_propertys:#goes through the propertys the player owned
             for property in sets:
+                property.owned = None
                 self.remove_property(property)#removes the properties from their list
                 property.owned = eliminator#if no-one got them out then the owned value is reset
                 if eliminator is not None:
@@ -242,10 +243,6 @@ class Player:
     def return_variables(self): #this will be used to get all the information that will be sent over the server
         return self.pos,self._radius,self.colour, self.money, self.username,self.out, self.owned_propertys
 
-
-def check_rect(rect):
-    x,y = pygame.mouse.get_pos()
-    return pygame.Rect(rect).collidepoint(x,y)
 
 
 class Auction:#the auction classed is used when a player lands on an unowned property but does not buy it
@@ -269,7 +266,6 @@ class Auction:#the auction classed is used when a player lands on an unowned pro
         self.property.enlarge_property(self.surface, 0)
         self.draw_bidding_squares()
         render_text(self.surface, font, self.players[self.turn].username, COLOURS["GREEN"], (WINDOW_WIDTH/4, SQUARE_MEASUREMENTS/2 +20))
-        print([player.username for player in self.players_out])
 
     def draw_bidding_squares(self): #draws the squares in which it shows the previous and current bid
         for i in range(6):
@@ -277,8 +273,7 @@ class Auction:#the auction classed is used when a player lands on an unowned pro
             x,y = pygame.Rect(amount_boxes).center
             if len(self.amounts) > i:
                 render_text(self.surface, font, str(self.amounts[i]),COLOURS["BLACK"], (x,y))
-                pygame.draw.rect(self.surface, self.players[(self.turn + i) % len(self.players)].colour, amount_boxes,
-                                 1)
+                pygame.draw.rect(self.surface, self.players[(self.turn + i) % len(self.players)].colour, amount_boxes,1)
 
     def add_amount(self, amount):#checks if player can bid the amount they want, adds it to the amounts and moves to next player
         if self.players[self.turn].money >= (self.amount + amount):
@@ -293,6 +288,8 @@ class Auction:#the auction classed is used when a player lands on an unowned pro
     def check_finished(self):#if there is only one player more in the player list than player_out list then there is only one player able to bid and thus have won the auction
         if len(self.players)-len(self.players_out) <= 1:
             return True
+        else:
+            return False
 
     def calculate_turn(self):#changes the turn value to the index of the next available player in self.players
         self.turn += 1

@@ -3,43 +3,10 @@ import traceback
 
 from player import *
 from constants import *
-from game_rules import *
+from utils import *
 from network import Network
 from board import Button
 import sys
-
-
-def import_instructions():
-    with open("instructions_writing.json") as f:
-        file = json.load(f)
-        f.close()
-    return file
-
-
-def write_instructions():#calculates how many characters can go on each line, where they are drawn to and then draws the text to the screen
-    instructions = import_instructions()#gets the text from a JSON file
-    letter_height = (INSTRUCTION_FONT.render("H", False, (0, 0, 0))).get_height() #calculates the height a letter will be using the font size selected
-    start_pos = WINDOW_WIDTH * 13 / 320
-    for instruction in instructions:#going through each instruction in the 11 instructions written for each screenshot
-        instruction_list = render_instruction_text(font, instructions[instruction], COLOURS["BLACK"],WINDOW_WIDTH - (2 * WINDOW_WIDTH * 3 / 20))#seperates the instruction into a list each element contains the maximum amount of characters that can fit in the space given
-        new_line = start_pos#gets the starting position for the instruction
-        for line in instruction_list:#goes through the text elements in the instruction list and draws them to the screen
-            render_text(win, INSTRUCTION_FONT, line, COLOURS["BLACK"], (WINDOW_WIDTH / 2, new_line))
-            new_line += letter_height #before it draws the next series of text from the same instruction it adds the letter height so the next bit of text is just underneath
-        start_pos += int(SQUARE_MEASUREMENTS / 12)#adds 1/12 of the height as the 11 images are evenly spread going down the window
-
-
-def calculate_picture_size(picture):#calculates the correct re-size of the image depending on it's actual height and width
-    width = picture.get_width()
-    height = picture.get_height()
-    if -5 < width - height < 5:#if the width and height are similar then the image will be drawn square
-        width = WINDOW_WIDTH*21/256
-    elif width > height:
-        width = WINDOW_WIDTH*3/20
-    else:
-        width = WINDOW_WIDTH*7/128
-    height= WINDOW_WIDTH*21/256
-    return int(width), int(height)
 
 
 class Client:
@@ -73,7 +40,7 @@ class Client:
         pygame.draw.rect(win, (200, 255, 200), (0, 0, WINDOW_WIDTH, SQUARE_MEASUREMENTS))
         self.start_screen_buttons[2].draw(win)#draws BACK button
         self.draw_screenshots()
-        write_instructions()
+        write_instructions(win)
 
 
     def draw_screenshots(self):#draws screenshots of the game to explain the instructions
@@ -242,7 +209,7 @@ class Client:
         break
     else:
         print("Error, this name is not allowed (must be between 1 and 19 characters)")"""
-name = "1"
+name = "One"
 
 
 
@@ -253,6 +220,8 @@ while True:
     client.start_options()
     server = Network()
     current_id = server.connect(name)
-    clock = pygame.time.Clock()
-    board = Board(WINDOW_WIDTH, SQUARE_MEASUREMENTS)
-    client.main_game_loop()
+    print(current_id)
+    if not isinstance(current_id, bool):
+        clock = pygame.time.Clock()
+        board = Board(WINDOW_WIDTH, SQUARE_MEASUREMENTS)
+        client.main_game_loop()

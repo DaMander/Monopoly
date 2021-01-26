@@ -1,5 +1,6 @@
 import json
 from constants import *
+from utils import *
 pygame.init()
 
 
@@ -23,7 +24,9 @@ class Board(pygame.Surface):   #this inherits from the pygame.surface class
             "BLACK": [],
             "BOARD COLOUR": []
         }#this will contain the instances of the property class but sorted into their coloured sets
-        """this could probably be shortened somehow"""
+        with open("property_information.json") as f:
+            file = json.load(f)
+            f.close()
         starting_value = SQUARE_MEASUREMENTS - PROPERTY_HEIGHT
         self.properties.append(Property("corner", starting_value, starting_value, *file[str(len(self.properties))].values()))
         for i in range(9):
@@ -143,7 +146,7 @@ class Board(pygame.Surface):   #this inherits from the pygame.surface class
         elif action_taken == 8 or action_taken == 9:#when a player lands on community chest, tax or chance property
             current_property.enlarge_card(self)#draws a card to the board with the information about where they landed
 
-    def draw_end_screen(self, pl_list, turn):
+    def draw_end_screen(self, pl_list: list, turn: int):
         pygame.draw.rect(self, COLOURS["ORANGE"], (0, 0, WINDOW_WIDTH, SQUARE_MEASUREMENTS))
         render_text(self, font, f'{pl_list[turn].username} has won', COLOURS["WHITE"],
                     (WINDOW_WIDTH / 2, SQUARE_MEASUREMENTS / 2))
@@ -176,11 +179,6 @@ class Board(pygame.Surface):   #this inherits from the pygame.surface class
                     if p.owned == counts[i][0]:
                         p.amount_houses = counts[i][1] -1
 
-    def no_deal_player(self):
-        pygame.draw.rect(self, COLOURS["BLACK"], (PROPERTY_HEIGHT, 150 + SQUARE_MEASUREMENTS / 2, SQUARE_MEASUREMENTS, PROPERTY_WIDTH))
-
-
-
     def convert_for_send(self, pl_list: list): #This goes through the propertys in the game and returns a list with all the property information that could change over the course of a game.
         prop_list = []                   #It goes through which player owns the property and returns their index in the pl-list to be sent over this is so an integer is being sent instead of the player instance.
         for prop in self.properties:
@@ -197,7 +195,7 @@ class Board(pygame.Surface):   #this inherits from the pygame.surface class
                 if send_board[prop_num][1] is not None:
                     self.properties[prop_num].owned = pl_list[send_board[prop_num][1]] #if it does not equal None then it is a player_index and thus the property.owned will return back to the player instance who owns it
             except:
-                print(send_board[prop_num][1])
+                None
             self.properties[prop_num].amount_houses = send_board[prop_num][2]
             self.properties[prop_num].full_set = send_board[prop_num][3]
 
@@ -266,11 +264,11 @@ class Property(pygame.Surface): #this class is used when drawing the squares to 
 
     def draw_houses(self, win):
         if self.amount_houses == 5:#this means the player has a hotel
-            pygame.draw.rect(win, COLOURS["RED"], (self.draw_hotel()))#a red square drawn for the hotel
+            pygame.draw.rect(win, COLOURS["RED"], (self.find_hotel_pos()))#a red square drawn for the hotel
         else:
             render_text(win, font, str(self.amount_houses), COLOURS["GREEN"], (40 + self.x, self.y + 40)) #it will display the number of houses the property has
 
-    def draw_hotel(self):#finds the correct position for the hotel graphic to be drawn
+    def find_hotel_pos(self):#finds the correct position for the hotel graphic to be drawn
         row = self.find_row()
         if row == "LEFT":
             return self.x + self.height / 4, self.y + PROPERTY_WIDTH / 2, 20, 20
@@ -300,6 +298,8 @@ class Property(pygame.Surface): #this class is used when drawing the squares to 
         x, y = pygame.mouse.get_pos()
         if pygame.Rect(self.x,self.y,self.width,self.height).collidepoint(x,y):
             return True
+        else:
+            return False
 
     def enlarge_property(self, win, pos: int):#this is graphically used to show a card which can be purchased onto the board
         starting_x = PROPERTY_HEIGHT + (PROPERTY_WIDTH * pos)  # if pos = 0 the property is on the left, 1 makes the property in the middle and 2 will put it on the right
@@ -337,7 +337,9 @@ class Property(pygame.Surface): #this class is used when drawing the squares to 
         for i in range(len(self.rent)):
             render_text(win, font,
                         f'If {str(i + 1)} "utility" is owned rent is {self.rent[str(i)]} times amount shown on dice',
-                        COLOURS["BLACK"], (x, y + 4 * PROPERTY_WIDTH + i * PROPERTY_WIDTH / 2))
+                        COLOURS["BLACK"], (x, y + 2 * PROPERTY_WIDTH + i * PROPERTY_WIDTH / 2))
+        render_text(win, font, f'MORTGAGE VALUE - {int(self.purchase / 2)}', COLOURS["BLACK"],
+                    (x, y + 5 * PROPERTY_WIDTH))
 
 
     def enlarge_card(self, win):#draws a card to the screen if player lands on community chest, chance or tax telling them what happens
@@ -369,15 +371,5 @@ class Button:
         x,y = pygame.mouse.get_pos()
         if pygame.Rect(self.x,self.y, self.width, self.height).collidepoint(x,y):
             return True
-
-
-
-
-
-
-
-
-
-with open("property_information.json") as f:
-    file = json.load(f)
-    f.close()
+        else:
+            return False
